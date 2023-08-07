@@ -1,0 +1,7 @@
+c=2
+cd /autofs/space/linen_001/users/Yixin/20230802_process
+cd diff_10k_64dir_C${c}
+dwiextract dwi.mif -no_bzero dwi_b10k.mif -force
+dwidenoise dwi_b10k.mif -noise dwi_sigma.nii.gz dwi_denoised.nii.gz -nthread 64 -force
+mrmath dwi_denoised.nii.gz mean dwi_denoised_mean.nii.gz -axis 3 -force
+mrcalc dwi_denoised_mean.nii.gz dwi_sigma.nii.gz -divide snr.nii.gz
