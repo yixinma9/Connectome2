@@ -1,0 +1,7 @@
+dwiextract dwi.mif -shells 0,1000 dwi_b0b1k.mif -force
+mrconvert dwi_b0b1k.mif dwi_b0b1k.nii.gz -export_grad_fsl bvecs bvals
+dwi2mask dwi_b0b1k.mif dwi_b0b1k_mask.nii.gz
+eddy_openmp --imain=dwi_b0b1k.nii.gz --mask=dwi_b0b1k_mask.nii.gz --acqp=acqparams.txt --index=index.txt --bvecs=bvecs --bvals=bvals --out=eddy/dwi_eddy
+mrconvert eddy/dwi_eddy.nii.gz -fslgrad eddy/dwi_eddy.eddy_rotated_bvecs bvals dwi_eddy.mif
+dwiextract dwi_eddy.mif -shells 1000 dwi_eddy_b1000.mif -force
+mrmath dwi_eddy_b1000.mif std dwi_eddy_b1000_std.nii.gz -axis 3
