@@ -1,0 +1,36 @@
+for folder in {s1_C1_b10k18k_TE57,s2_C2_b10k18k_TE43};do
+cd /autofs/space/linen_001/users/Yixin/20230810_process
+cd ${folder}/dfc
+dwiextract dwi.mif -shells 10000 dwi_b10k.mif -force
+dwiextract dwi.mif -shells 18000 dwi_b18k.mif -force
+for b in {10k,18k};do
+dwidenoise dwi_b${b}.mif -noise dwi_b${b}_sigma.nii.gz dwi_b${b}_denoised.nii.gz -nthread 64 -force
+mrmath dwi_b${b}_denoised.nii.gz mean dwi_b${b}_denoised_mean.nii.gz -axis 3 -force
+mrmath dwi_b${b}.mif mean dwi_b${b}_mean.nii.gz -axis 3 -force
+mrcalc dwi_b${b}_mean.nii.gz dwi_b${b}_sigma.nii.gz -divide ../../snr_b${b}_${folder}.nii.gz -force
+done
+done
+
+for folder in {s1_C1_b10k18k_TE57,s2_C2_b10k18k_TE43,s3_C1_b1k5k_TE47,s4_C2_b1k5k_TE34};do
+cd /autofs/space/linen_001/users/Yixin/20230810_process
+cd ${folder}/dfc
+dwiextract dwi.mif -bzero dwi_b0s.mif -force
+mrmath dwi_b0s.mif mean dwi_b0s_mean.nii.gz -axis 3 -force
+mrmath dwi_b0s.mif std dwi_b0s_std.nii.gz -axis 3 -force
+mrcalc dwi_b0s_mean.nii.gz dwi_b0s_std.nii.gz -divide ../../snr_b0s_${folder}.nii.gz -force
+done
+
+for folder in {s3_C1_b1k5k_TE47,s4_C2_b1k5k_TE34};do
+cd /autofs/space/linen_001/users/Yixin/20230810_process
+cd ${folder}/dfc
+dwiextract dwi.mif -shells 1000 dwi_b1k.mif -force
+dwiextract dwi.mif -shells 5000 dwi_b5k.mif -force
+for b in {1k,5k};do
+dwidenoise dwi_b${b}.mif -noise dwi_b${b}_sigma.nii.gz dwi_b${b}_denoised.nii.gz -nthread 64 -force
+mrmath dwi_b${b}_denoised.nii.gz mean dwi_b${b}_denoised_mean.nii.gz -axis 3 -force
+mrmath dwi_b${b}.mif mean dwi_b${b}_mean.nii.gz -axis 3 -force
+#mrcalc dwi_b${b}_mean.nii.gz dwi_b${b}_sigma.nii.gz -divide snr_b${b}.nii.gz -force
+mrcalc dwi_b${b}_mean.nii.gz dwi_b${b}_sigma.nii.gz -divide ../../snr_b${b}_${folder}.nii.gz -force
+done
+done
+
