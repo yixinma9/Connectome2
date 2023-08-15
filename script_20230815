@@ -1,1 +1,63 @@
+cd /autofs/space/linen_001/users/Yixin/20230815_process
+mrconvert ../20230815 s1_MPRAGE/nii/T1.nii.gz 1
+mrconvert ../20230815 s2_ep2d_C2_d6_highB/nii/dwi.mif 2
+mrconvert ../20230815 s3_ep2d_C2_d6_PA/nii/dwi.mif 4
+mrconvert ../20230815 s4_ep2d_C2_d6_lowB/nii/dwi.mif 6
+mrconvert ../20230815 s5_ep2d_C2_d10_PA/nii/dwi.mif 8
+mrconvert ../20230815 s6_ep2d_C2_d10_highB/nii/dwi.mif 9
+mrconvert ../20230815 s7_ep2d_C2_d10_lowB/nii/dwi.mif 11
+
+cd /autofs/space/linen_001/users/Yixin/20230815_process
+for folder in {s2_ep2d_C2_d6_highB,s3_ep2d_C2_d6_PA,s4_ep2d_C2_d6_lowB,s5_ep2d_C2_d10_PA,s6_ep2d_C2_d10_highB,s7_ep2d_C2_d10_lowB};do
+mkdir /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/gradnonlin
+
+cd /autofs/space/linen_001/users/Yixin/20230815_process
+for folder in {s2_ep2d_C2_d6_highB,s3_ep2d_C2_d6_PA,s4_ep2d_C2_d6_lowB,s5_ep2d_C2_d10_PA,s6_ep2d_C2_d10_highB,s7_ep2d_C2_d10_lowB};do
+cd /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/nii/
+mrconvert dwi.mif -export_grad_fsl bvecs bvals dwi.nii.gz -force
+done
+
+//gradient nonlinearity run on matlab
+
+matlab -nodesktop
+
+%need the following path names when run stuff on matlab
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230815_process';
+subj = {'s2_ep2d_C2_d6_highB','s3_ep2d_C2_d6_PA','s4_ep2d_C2_d6_lowB','s5_ep2d_C2_d10_PA','s6_ep2d_C2_d10_highB','s7_ep2d_C2_d10_lowB'};
+
+for s_= 1:6
+    rooti = fullfile(root,subj{s_},'nii');
+    rootgrad = fullfile(root,subj{s_}),'gradnonlin';
+    
+    roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+    
+    system(sprintf('%s/hcps_gnc.sh -i %s -o %s -interp spline',...
+    roothcp,...
+    fullfile(rooti,['dwi.nii.gz']),...
+    fullfile(rootgrad,['dwi_gradnonlin.nii']) ));
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
