@@ -6,7 +6,7 @@ matlab -nodesktop
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
 root = '/autofs/space/linen_001/users/Yixin/20230810_process';
-subj = {'s3_C1_b1k5k_TE47', 's4_C2_b1k5k_TE34'};
+subj = {'s3_C1_b1k5k_TE47_RR', 's4_C2_b1k5k_TE34_RR'};
 
 for s_= 1:2
 rooti = fullfile(root,subj{s_},'dfc');
