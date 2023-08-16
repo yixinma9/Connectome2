@@ -48,13 +48,19 @@ cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
 mrdegibbs nii/dwi.mif degibbs/dwi.mif
 
 //run topup using the averaged b0s from s5 and s6
+cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
 mrconvert degibbs/dwi.mif -coord 3 0:9 degibbs/temp1.mif -force
-mrconvert degibbs/dwi.mif -coord 3 10:19 degibbs/temp2.mif -force
+mrconvert degibbs/dwi.mif -coord 3 10:11 degibbs/temp2.mif -force
 mrmath degibbs/temp1.mif mean degibbs/temp1_mean.nii.gz -axis 3 -force
 mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
-mrcat degibbs/temp1_mean.nii.gz degibbs/temp2_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
+mrcat degibbs/temp2_mean.nii.gz degibbs/temp1_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
 
+//run topup
+cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
+topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
 
+//run eddy
+eddy_openmp --imain=degibbs/dwi.nii.gz --mask=topup/b0s_topup_bet_mask.nii --acqp=eddy/acqparams.txt --index=eddy/index.txt --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/my_topup_results --out=eddt/dwi_eddy --data_is_shelled --verbose
 
 
 
