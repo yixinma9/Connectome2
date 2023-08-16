@@ -1,0 +1,20 @@
+for folder in {s1_C1_TE74_DEL49_del6,s2_C2_TE39_DEL18_del6,s3_C1_TE77_DEL49_del6,s4_C2_TE42_DEL18_del6};do
+cd /autofs/space/linen_001/users/Yixin/20230814_process
+cd ${folder}
+#mrconvert dwi.mif dwi.nii.gz -export_grad_fsl bvecs bvals -force
+b=10k
+dwiextract dwi.mif -shells 10000 dwi_b10k.mif -force
+dwidenoise dwi_b${b}.mif -noise dwi_b${b}_sigma.nii.gz dwi_b${b}_denoised.nii.gz -nthread 64 -force
+mrmath dwi_b${b}_denoised.nii.gz mean dwi_b${b}_denoised_mean.nii.gz -axis 3 -force
+mrmath dwi_b${b}.mif mean dwi_b${b}_mean.nii.gz -axis 3 -force
+mrcalc dwi_b${b}_mean.nii.gz dwi_b${b}_sigma.nii.gz -divide ../snr_b${b}_${folder}.nii.gz -force
+done
+
+for folder in {s1_C1_TE74_DEL49_del6,s2_C2_TE39_DEL18_del6,s3_C1_TE77_DEL49_del6,s4_C2_TE42_DEL18_del6};do
+cd /autofs/space/linen_001/users/Yixin/20230814_process
+cd ${folder}
+mrconvert dwi.mif -coord 3 69:78 dwi_b0s.mif -force
+mrmath dwi_b0s.mif mean dwi_b0s_mean.nii.gz -axis 3 -force
+mrmath dwi_b0s.mif std dwi_b0s_std.nii.gz -axis 3 -force
+mrcalc dwi_b0s_mean.nii.gz dwi_b0s_std.nii.gz -divide ../snr_b0s_${folder}.nii.gz -force
+done
