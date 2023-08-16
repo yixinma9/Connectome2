@@ -55,12 +55,18 @@ mrmath degibbs/temp1.mif mean degibbs/temp1_mean.nii.gz -axis 3 -force
 mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
 mrcat degibbs/temp2_mean.nii.gz degibbs/temp1_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
 
+//generate mask
+/autofs/space/linen_001/users/Yixin/20230815_process/combined/topup
+mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3
+bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
+
+
 //run topup
 cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
 topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
 
 //run eddy
-eddy_openmp --imain=degibbs/dwi.nii.gz --mask=topup/b0s_topup_bet_mask.nii --acqp=eddy/acqparams.txt --index=eddy/index.txt --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/my_topup_results --out=eddy/dwi_eddy --data_is_shelled --verbose
+eddy_openmp --imain=degibbs/dwi.nii.gz --mask=topup/b0s_topup_mean_bet_mask.nii --acqp=eddy/acqparams.txt --index=eddy/index.txt --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/my_topup_results --out=eddy/dwi_eddy --data_is_shelled --verbose
 
 
 
