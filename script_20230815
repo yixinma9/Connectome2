@@ -38,9 +38,21 @@ for s_= 1:6
     fullfile(rooti,['dwi.nii.gz']),...
     fullfile(rootgrad,['dwi_gradnonlin.nii']) ));
 end
+//combine all series
+path=/autofs/space/linen_001/users/Yixin/20230815_process
+cd /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/nii/
+mrcat ${path}/s5_ep2d_C2_d10_PA/nii/dwi.mif ${path}/s6_ep2d_C2_d10_highB/nii/dwi.mif ${path}/s7_ep2d_C2_d10_lowB/nii/dwi.mif ${path}/s2_ep2d_C2_d6_highB/nii/dwi.mif ${path}/s3_ep2d_C2_d6_PA/nii/dwi.mif ${path}/s4_ep2d_C2_d6_lowB/nii/dwi.mif -axis 3 ${path}/combined/nii/dwi.mif -force
 
+//run degibbs to remove gibbs ringing
+cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
+mrdegibbs nii/dwi.mif degibbs/dwi.mif
 
-
+//run topup using the averaged b0s from s5 and s6
+mrconvert degibbs/dwi.mif -coord 3 0:9 degibbs/temp1.mif -force
+mrconvert degibbs/dwi.mif -coord 3 10:19 degibbs/temp2.mif -force
+mrmath degibbs/temp1.mif mean degibbs/temp1_mean.nii.gz -axis 3 -force
+mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
+mrcat degibbs/temp1_mean.nii.gz degibbs/temp2_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
 
 
 
