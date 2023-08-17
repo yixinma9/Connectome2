@@ -33,7 +33,6 @@ done
 for folder in {s2_G300_S80_b30k_TE106_DEL76_del8_dfc,s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc,s4_G300_S80_b40k_TE128_DEL100_del8_dfc,s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc,s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc,};do
 for folder in {s11_G500_S600_b5k_TE40_DEL15_del8_dfc,s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc};do
 for folder in {s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc,s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc,s9_G500_S600_b20k_TE48_DEL23_del8_dfc,s10_G500_S600_b10k_TE40_DEL15_del8_dfc};do
-
 cd /autofs/space/linen_001/users/Yixin/20230816_process
 cd ${folder}/nii
 mrconvert dwi.mif -coord 3 69:78 dwi_b0s.mif -force
@@ -41,6 +40,24 @@ mrmath dwi_b0s.mif mean dwi_b0s_mean.nii.gz -axis 3 -force
 mrmath dwi_b0s.mif std dwi_b0s_std.nii.gz -axis 3 -force
 mrcalc dwi_b0s_mean.nii.gz dwi_b0s_std.nii.gz -divide ../../snr_b0s_${folder}.nii.gz -force
 done
+
+for folder in {s2_G300_S80_b30k_TE106_DEL76_del8_dfc,s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc,s4_G300_S80_b40k_TE128_DEL100_del8_dfc,s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc,s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc,};do
+#for folder in {s11_G500_S600_b5k_TE40_DEL15_del8_dfc,s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc};do
+#for folder in {s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc,s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc,s9_G500_S600_b20k_TE48_DEL23_del8_dfc,s10_G500_S600_b10k_TE40_DEL15_del8_dfc};do
+cd /autofs/space/linen_001/users/Yixin/20230816_process
+cd ${folder}/nii
+bet dwi_b0s_mean.nii.gz dwi_b0s_mean_bet -m
+done
+
+
+matlab -nodesktop
+for folder = ["s2_G300_S80_b30k_TE106_DEL76_del8_dfc", "s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc", "s4_G300_S80_b40k_TE128_DEL100_del8_dfc"]
+for folder = ["s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc", "s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc"]
+for folder = ["s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc", "s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc", "s9_G500_S600_b20k_TE48_DEL23_del8_dfc"]
+for folder = ["s10_G500_S600_b10k_TE40_DEL15_del8_dfc", "s11_G500_S600_b5k_TE40_DEL15_del8_dfc", "s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc"]
+cd(['/autofs/space/linen_001/users/Yixin/20230816_process/', char(folder), '/nii'])
+image = niftiread('')
+
 
 
 
