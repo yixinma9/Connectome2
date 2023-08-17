@@ -50,27 +50,91 @@ bet dwi_b0s_mean.nii.gz dwi_b0s_mean_bet -m
 done
 
 cd /autofs/space/linen_001/users/Yixin/20230816_process
-mrcalc s2_G300_S80_b30k_TE106_DEL76_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz \
-s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \ 
-s4_G300_S80_b40k_TE128_DEL100_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \
-s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \ 
-s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \ 
-s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \
-s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \
-s9_G500_S600_b20k_TE48_DEL23_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \
-s10_G500_S600_b10k_TE40_DEL15_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \
-s11_G500_S600_b5k_TE40_DEL15_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \
-s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -multiply \
-dwi_b0s_mean_bet_mask_all.nii.gz
+mrcalc 1 1 s2_G300_S80_b30k_TE106_DEL76_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract \
+1 s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s4_G300_S80_b40k_TE128_DEL100_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s9_G500_S600_b20k_TE48_DEL23_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s10_G500_S600_b10k_TE40_DEL15_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s11_G500_S600_b5k_TE40_DEL15_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+1 s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc/nii/dwi_b0s_mean_bet_mask.nii.gz -subtract -multiply \
+-subtract dwi_b0s_mean_bet_mask_all.nii.gz
 
 
 matlab -nodesktop
-for folder = ["s2_G300_S80_b30k_TE106_DEL76_del8_dfc", "s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc", "s4_G300_S80_b40k_TE128_DEL100_del8_dfc"]
-for folder = ["s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc", "s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc"]
-for folder = ["s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc", "s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc", "s9_G500_S600_b20k_TE48_DEL23_del8_dfc"]
+i = 1
+for folder = ["s4_G300_S80_b40k_TE128_DEL100_del8_dfc","s2_G300_S80_b30k_TE106_DEL76_del8_dfc"]
+cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
+snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
+mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
+snr_b0s_all(i) = snr_b0s_median
+snr_dwis_all(i) = snr_dwis_median
+i = i + 1;
+end
+
+for folder = ["s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc", "s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc"]
+cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
+snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
+mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
+snr_b0s_all(i) = snr_b0s_median
+snr_dwis_all(i) = snr_dwis_median
+i = i + 1;
+end
+
+for folder = ["s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc", "s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc"] 
+cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
+snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
+mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
+snr_b0s_all(i) = snr_b0s_median
+snr_dwis_all(i) = snr_dwis_median
+i = i + 1;
+end
+
+for folder = ["s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc", "s9_G500_S600_b20k_TE48_DEL23_del8_dfc"]
+cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
+snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
+mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
+snr_b0s_all(i) = snr_b0s_median
+snr_dwis_all(i) = snr_dwis_median
+i = i + 1;
+end
+
 for folder = ["s10_G500_S600_b10k_TE40_DEL15_del8_dfc", "s11_G500_S600_b5k_TE40_DEL15_del8_dfc", "s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc"]
-cd(['/autofs/space/linen_001/users/Yixin/20230816_process/', char(folder), '/nii'])
-image = niftiread('')
+cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
+snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
+mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
+snr_b0s_all(i) = snr_b0s_median
+snr_dwis_all(i) = snr_dwis_median;
+i = i + 1;
+end
+
+figure,
+plot([40000, 30000, 20000, 10000, 5000], snr_dwis_all(1:5),'*-')
+hold on
+plot([40000, 30000, 20000, 10000, 5000], snr_dwis_all(6:10),'*-',)
+figure,
+plot([40000, 30000, 20000, 10000, 5000], snr_b0s_all(1:5),'*-')
+hold on
+plot([40000, 30000, 20000, 10000, 5000], snr_b0s_all(6:10),'*-')
+
 
 
 
