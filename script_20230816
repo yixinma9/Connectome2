@@ -1,0 +1,69 @@
+cd /autofs/space/linen_001/users/Yixin/20230815_process
+mrconvert ../20230816 s1_MPRAGE/nii/T1.nii.gz 1
+mrconvert ../20230816 s2_ep2d_C2_d6_highB/nii/dwi.mif 2
+mrconvert ../20230816 s3_ep2d_C2_d6_PA/nii/dwi.mif 4
+mrconvert ../20230816 s4_ep2d_C2_d6_lowB/nii/dwi.mif 6
+mrconvert ../20230816 s5_ep2d_C2_d10_PA/nii/dwi.mif 8
+mrconvert ../20230816 s6_ep2d_C2_d10_highB/nii/dwi.mif 9
+mrconvert ../20230816 s7_ep2d_C2_d10_lowB/nii/dwi.mif 11
+
+cd /autofs/space/linen_001/users/Yixin/20230815_process
+for folder in {s2_ep2d_C2_d6_highB,s3_ep2d_C2_d6_PA,s4_ep2d_C2_d6_lowB,s5_ep2d_C2_d10_PA,s6_ep2d_C2_d10_highB,s7_ep2d_C2_d10_lowB};do
+mkdir /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/gradnonlin
+
+cd /autofs/space/linen_001/users/Yixin/20230815_process
+for folder in {s2_ep2d_C2_d6_highB,s3_ep2d_C2_d6_PA,s4_ep2d_C2_d6_lowB,s5_ep2d_C2_d10_PA,s6_ep2d_C2_d10_highB,s7_ep2d_C2_d10_lowB};do
+cd /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/nii/
+mrconvert dwi.mif -export_grad_fsl bvecs bvals dwi.nii.gz -force
+done
+
+//gradient nonlinearity run on matlab
+
+matlab -nodesktop
+
+%need the following path names when run stuff on matlab
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230815_process';
+subj = {'s2_ep2d_C2_d6_highB','s3_ep2d_C2_d6_PA','s4_ep2d_C2_d6_lowB','s5_ep2d_C2_d10_PA','s6_ep2d_C2_d10_highB','s7_ep2d_C2_d10_lowB'};
+
+for s_= 1:6
+    rooti = fullfile(root,subj{s_},'nii');
+    rootgrad = fullfile(root,subj{s_}，'gradnonlin');
+    
+    roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+    
+    system(sprintf('%s/hcps_gnc.sh -i %s -o %s -interp spline',...
+    roothcp,...
+    fullfile(rooti,['dwi.nii.gz']),...
+    fullfile(rootgrad,['dwi_gradnonlin.nii']) ));
+end
+//combine all series
+path=/autofs/space/linen_001/users/Yixin/20230815_process
+cd /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/nii/
+mrcat ${path}/s5_ep2d_C2_d10_PA/nii/dwi.mif ${path}/s6_ep2d_C2_d10_highB/nii/dwi.mif ${path}/s7_ep2d_C2_d10_lowB/nii/dwi.mif ${path}/s2_ep2d_C2_d6_highB/nii/dwi.mif ${path}/s3_ep2d_C2_d6_PA/nii/dwi.mif ${path}/s4_ep2d_C2_d6_lowB/nii/dwi.mif -axis 3 ${path}/combined/nii/dwi.mif -force
+
+//run degibbs to remove gibbs ringing
+cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
+mrdegibbs nii/dwi.mif degibbs/dwi.mif
+
+//run topup using the averaged b0s from s5 and s6
+cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
+mrconvert degibbs/dwi.mif -coord 3 0:9 degibbs/temp1.mif -force
+mrconvert degibbs/dwi.mif -coord 3 10:11 degibbs/temp2.mif -force
+mrmath degibbs/temp1.mif mean degibbs/temp1_mean.nii.gz -axis 3 -force
+mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
+mrcat degibbs/temp2_mean.nii.gz degibbs/temp1_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
+
+//generate mask
+/autofs/space/linen_001/users/Yixin/20230815_process/combined/topup
+mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3
+bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
+
+
+//run topup
+cd /autofs/space/linen_001/users/Yixin/20230815_process/combined
+topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
+
+//run eddy
+eddy_openmp --imain=degibbs/dwi.nii.gz --mask=topup/b0s_topup_mean_bet_mask.nii --acqp=eddy/acqparams.txt --index=eddy/index.txt --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/my_topup_results --out=eddy/dwi_eddy --data_is_shelled --verbose
