@@ -1,21 +1,63 @@
 cd /autofs/space/linen_001/users/Yixin/20230815_process
 mrconvert ../20230816 s1_MPRAGE/nii/T1.nii.gz 1
-mrconvert ../20230816 s2_ep2d_C2_d6_highB/nii/dwi.mif 2
-mrconvert ../20230816 s3_ep2d_C2_d6_PA/nii/dwi.mif 4
-mrconvert ../20230816 s4_ep2d_C2_d6_lowB/nii/dwi.mif 6
-mrconvert ../20230816 s5_ep2d_C2_d10_PA/nii/dwi.mif 8
-mrconvert ../20230816 s6_ep2d_C2_d10_highB/nii/dwi.mif 9
-mrconvert ../20230816 s7_ep2d_C2_d10_lowB/nii/dwi.mif 11
+mrconvert ../20230816 s1_MPRAGE/nii/T1.nii.gz 38
 
-cd /autofs/space/linen_001/users/Yixin/20230815_process
-for folder in {s2_ep2d_C2_d6_highB,s3_ep2d_C2_d6_PA,s4_ep2d_C2_d6_lowB,s5_ep2d_C2_d10_PA,s6_ep2d_C2_d10_highB,s7_ep2d_C2_d10_lowB};do
-mkdir /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/gradnonlin
+mrconvert ../20230816 s2_G300_S80_b30k_TE106_DEL76_del8_dfc/nii/dwi.mif 3
+mrconvert ../20230816 s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc/nii/dwi.mif 6
+mrconvert ../20230816 s4_G300_S80_b40k_TE128_DEL100_del8_dfc/nii/dwi.mif -force 9
+mrconvert ../20230816 s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc/nii/dwi.mif -force 12
+mrconvert ../20230816 s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc/nii/dwi.mif -force 15
+mrconvert ../20230816 s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc/nii/dwi.mif -force 18
+mrconvert ../20230816 s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc/nii/dwi.mif -force 21
+mrconvert ../20230816 s9_G500_S600_b20k_TE48_DEL23_del8_dfc/nii/dwi.mif -force 24
+mrconvert ../20230816 s10_G500_S600_b10k_TE40_DEL15_del8_dfc/nii/dwi.mif -force 27
+mrconvert ../20230816 s11_G500_S600_b5k_TE40_DEL15_del8_dfc/nii/dwi.mif -force 30
+mrconvert ../20230816 s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc/nii/dwi.mif -force 33
+s11_G500_S600_b5k_TE40_DEL15_del8_dfc,s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc
+s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc,s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc,s9_G500_S600_b20k_TE48_DEL23_del8_dfc,s10_G500_S600_b10k_TE40_DEL15_del8_dfc,
 
-cd /autofs/space/linen_001/users/Yixin/20230815_process
-for folder in {s2_ep2d_C2_d6_highB,s3_ep2d_C2_d6_PA,s4_ep2d_C2_d6_lowB,s5_ep2d_C2_d10_PA,s6_ep2d_C2_d10_highB,s7_ep2d_C2_d10_lowB};do
-cd /autofs/space/linen_001/users/Yixin/20230815_process/${folder}/nii/
-mrconvert dwi.mif -export_grad_fsl bvecs bvals dwi.nii.gz -force
+for folder in {s2_G300_S80_b30k_TE106_DEL76_del8_dfc,s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc,s4_G300_S80_b40k_TE128_DEL100_del8_dfc,s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc,s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc,};do
+for folder in {s11_G500_S600_b5k_TE40_DEL15_del8_dfc,s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc};do
+for folder in {s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc,s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc,s9_G500_S600_b20k_TE48_DEL23_del8_dfc,s10_G500_S600_b10k_TE40_DEL15_del8_dfc};do
+cd /autofs/space/linen_001/users/Yixin/20230816_process
+cd ${folder}/nii
+#mrconvert dwi.mif dwi.nii.gz -export_grad_fsl bvecs bvals -force
+b=10k
+dwiextract dwi.mif -no_bzero dwi_nobzeros.mif -force
+dwidenoise dwi_nobzeros.mif -noise dwi_nobzeros_sigma.nii.gz dwi_nobzeros_denoised.nii.gz -nthread 64 -force
+mrmath dwi_nobzeros_denoised.nii.gz mean dwi_nobzeros_denoised_mean.nii.gz -axis 3 -force
+mrmath dwi_nobzeros.mif mean dwi_nobzeros_mean.nii.gz -axis 3 -force
+mrcalc dwi_nobzeros_mean.nii.gz dwi_nobzeros_sigma.nii.gz -divide ../../snr_nobzeros_${folder}.nii.gz -force
 done
+
+for folder in {s2_G300_S80_b30k_TE106_DEL76_del8_dfc,s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc,s4_G300_S80_b40k_TE128_DEL100_del8_dfc,s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc,s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc,};do
+for folder in {s11_G500_S600_b5k_TE40_DEL15_del8_dfc,s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc};do
+for folder in {s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc,s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc,s9_G500_S600_b20k_TE48_DEL23_del8_dfc,s10_G500_S600_b10k_TE40_DEL15_del8_dfc};do
+
+cd /autofs/space/linen_001/users/Yixin/20230816_process
+cd ${folder}/nii
+mrconvert dwi.mif -coord 3 69:78 dwi_b0s.mif -force
+mrmath dwi_b0s.mif mean dwi_b0s_mean.nii.gz -axis 3 -force
+mrmath dwi_b0s.mif std dwi_b0s_std.nii.gz -axis 3 -force
+mrcalc dwi_b0s_mean.nii.gz dwi_b0s_std.nii.gz -divide ../../snr_b0s_${folder}.nii.gz -force
+done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //gradient nonlinearity run on matlab
 
