@@ -68,7 +68,14 @@ topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0
 //run eddy
 eddy_openmp --imain=degibbs/dwi.nii.gz --mask=topup/b0s_topup_mean_bet_mask.nii --acqp=eddy/acqparams.txt --index=eddy/index.txt --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/my_topup_results --out=eddy/dwi_eddy --data_is_shelled --verbose
 
+//tdr calculation
 
+for b in {400,1k,2p5k,5k,8k,12k,14p5k};do
+mrmath dwi_b${b}_delta10ms.mif mean dwi_b${b}_delta10ms_mean.mif -axis 3
+mrmath dwi_b${b}_delta6ms.mif mean dwi_b${b}_delta6ms_mean.mif -axis 3
+mrcalc dwi_b${b}_delta10ms_mean.mif dwi_b${b}_delta6ms_mean.mif -subtract -abs dwi_b${b}_delta10ms_mean.mif -divide tdr1_b${b}.nii.gz
+mrcalc dwi_b${b}_delta10ms_mean.mif dwi_b${b}_delta6ms_mean.mif -subtract -abs dwi_b${b}_delta6ms_mean.mif -divide tdr2_b${b}.nii.gz
+done
 
 
 
