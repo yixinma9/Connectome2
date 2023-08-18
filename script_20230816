@@ -71,8 +71,8 @@ cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
-snr_b0s_median = mean(snr_b0s(mask==1));
-snr_dwis_median = mean(snr_dwis(mask==1));
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
 snr_dwis_all(i) = snr_dwis_median
 i = i + 1;
@@ -83,8 +83,8 @@ cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
-snr_b0s_median = mean(snr_b0s(mask==1));
-snr_dwis_median = mean(snr_dwis(mask==1));
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
 snr_dwis_all(i) = snr_dwis_median
 i = i + 1;
@@ -95,8 +95,8 @@ cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
-snr_b0s_median = mean(snr_b0s(mask==1));
-snr_dwis_median = mean(snr_dwis(mask==1));
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
 snr_dwis_all(i) = snr_dwis_median
 i = i + 1;
@@ -107,8 +107,8 @@ cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
-snr_b0s_median = mean(snr_b0s(mask==1));
-snr_dwis_median = mean(snr_dwis(mask==1));
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
 snr_dwis_all(i) = snr_dwis_median
 i = i + 1;
@@ -119,8 +119,8 @@ cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
-snr_b0s_median = mean(snr_b0s(mask==1));
-snr_dwis_median = mean(snr_dwis(mask==1));
+snr_b0s_median = median(snr_b0s(mask==1));
+snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
 snr_dwis_all(i) = snr_dwis_median;
 i = i + 1;
