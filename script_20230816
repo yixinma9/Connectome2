@@ -31,14 +31,15 @@ mrcalc dwi_nobzeros_mean.nii.gz dwi_nobzeros_sigma.nii.gz -divide ../../snr_nobz
 done
 
 for folder in {s2_G300_S80_b30k_TE106_DEL76_del8_dfc,s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc,s4_G300_S80_b40k_TE128_DEL100_del8_dfc,s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc,s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc,};do
-for folder in {s11_G500_S600_b5k_TE40_DEL15_del8_dfc,s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc};do
-for folder in {s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc,s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc,s9_G500_S600_b20k_TE48_DEL23_del8_dfc,s10_G500_S600_b10k_TE40_DEL15_del8_dfc};do
+#for folder in {s11_G500_S600_b5k_TE40_DEL15_del8_dfc,s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc};do
+#for folder in {s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc,s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc,s9_G500_S600_b20k_TE48_DEL23_del8_dfc,s10_G500_S600_b10k_TE40_DEL15_del8_dfc};do
 cd /autofs/space/linen_001/users/Yixin/20230816_process
 cd ${folder}/nii
-mrconvert dwi.mif -coord 3 69:78 dwi_b0s.mif -force
-mrmath dwi_b0s.mif mean dwi_b0s_mean.nii.gz -axis 3 -force
+#mrconvert dwi.mif -coord 3 69:78 dwi_b0s.mif -force
+#mrmath dwi_b0s.mif mean dwi_b0s_mean.nii.gz -axis 3 -force
 mrmath dwi_b0s.mif std dwi_b0s_std.nii.gz -axis 3 -force
-mrcalc dwi_b0s_mean.nii.gz dwi_b0s_std.nii.gz -divide ../../snr_b0s_${folder}.nii.gz -force
+mrfilter dwi_b0s_std.nii.gz median dwi_b0s_std_median.nii.gz -extent 11 -force
+mrcalc dwi_b0s_mean.nii.gz dwi_b0s_std_median.nii.gz -divide ../../snr_b0s_median_filter_${folder}.nii.gz -force
 done
 
 for folder in {s2_G300_S80_b30k_TE106_DEL76_del8_dfc,s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc,s4_G300_S80_b40k_TE128_DEL100_del8_dfc, s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc,s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc,};do
@@ -68,7 +69,7 @@ matlab -nodesktop
 i = 1
 for folder = ["s4_G300_S80_b40k_TE128_DEL100_del8_dfc","s2_G300_S80_b30k_TE106_DEL76_del8_dfc"]
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
-snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
@@ -80,7 +81,7 @@ end
 
 for folder = ["s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc", "s5_G300_S80_b10k_TE55_DEL27p2_del8_dfc"]
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
-snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
@@ -92,7 +93,7 @@ end
 
 for folder = ["s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc", "s7_G500_S600_b40k_TE65_DEL39p8_del8_dfc"] 
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
-snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
@@ -104,7 +105,7 @@ end
 
 for folder = ["s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc", "s9_G500_S600_b20k_TE48_DEL23_del8_dfc"]
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
-snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
@@ -116,7 +117,7 @@ end
 
 for folder = ["s10_G500_S600_b10k_TE40_DEL15_del8_dfc", "s11_G500_S600_b5k_TE40_DEL15_del8_dfc", "s12_G87_S62p5_b5k_TE176_DEL150_del8_dfc"]
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
-snr_b0s = niftiread(['snr_b0s_',char(folder),'.nii.gz']);
+snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
 mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
