@@ -71,7 +71,7 @@ for folder = ["s4_G300_S80_b40k_TE128_DEL100_del8_dfc","s2_G300_S80_b30k_TE106_D
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
-mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+mask = niftiread('dwi_b0s_mean_bet_mask_all_erode20.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
 snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
@@ -83,7 +83,7 @@ for folder = ["s3_G300_S80_b20k_TE79_DEL51p5_del8_dfc", "s5_G300_S80_b10k_TE55_D
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
-mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+mask = niftiread('dwi_b0s_mean_bet_mask_all_erode20.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
 snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
@@ -95,7 +95,7 @@ for folder = ["s6_G300_S80_b5k_TE46_DEL17p9_del8_dfc", "s7_G500_S600_b40k_TE65_D
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
-mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+mask = niftiread('dwi_b0s_mean_bet_mask_all_erode20.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
 snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
@@ -107,7 +107,7 @@ for folder = ["s8_G500_S600_b30k_TE57_DEL32p2_del8_dfc", "s9_G500_S600_b20k_TE48
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
-mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+mask = niftiread('dwi_b0s_mean_bet_mask_all_erode20.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
 snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
@@ -119,7 +119,7 @@ for folder = ["s10_G500_S600_b10k_TE40_DEL15_del8_dfc", "s11_G500_S600_b5k_TE40_
 cd(['/autofs/space/linen_001/users/Yixin/20230816_process/'])
 snr_b0s = niftiread(['snr_b0s_median_filter_',char(folder),'.nii.gz']);
 snr_dwis = niftiread(['snr_nobzeros_',char(folder),'.nii.gz']);
-mask = niftiread('dwi_b0s_mean_bet_mask_all.nii.gz');
+mask = niftiread('dwi_b0s_mean_bet_mask_all_erode20.nii.gz');
 snr_b0s_median = median(snr_b0s(mask==1));
 snr_dwis_median = median(snr_dwis(mask==1));
 snr_b0s_all(i) = snr_b0s_median
