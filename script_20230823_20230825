@@ -41,9 +41,12 @@ topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0
 done
 
 //generate mask
-/autofs/space/linen_001/users/Yixin/20230815_process/combined/topup
+path=/autofs/space/linen_001/users/Yixin/
+for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
+cd ${path}/${folder}/combined/topup
 mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3
 bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
+done
 
 //run eddy
 eddy_openmp --imain=degibbs/dwi.nii.gz --mask=topup/b0s_topup_mean_bet_mask.nii --acqp=eddy/acqparams.txt --index=eddy/index.txt --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/my_topup_results --out=eddy/dwi_eddy --data_is_shelled --verbose
