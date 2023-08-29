@@ -138,7 +138,27 @@ plot([40000, 30000, 20000, 10000, 5000], snr_b0s_all(6:10),'*-')
 
 
 
+//gradient nonlinearity run on matlab
 
+matlab -nodesktop
+
+%need the following path names when run stuff on matlab
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230816_process';
+subj = {'s1_MPRAGE_no_Grad'};
+
+for s_= 1:1
+rooti = fullfile(root,subj{s_},'nii');
+
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+
+system(sprintf('%s/hcps_gnc.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['T1.nii.gz']),...
+fullfile(rooti,['T1_gradnonlin.nii']) ));
+
+end
 
 
 
