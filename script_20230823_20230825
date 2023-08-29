@@ -1,1 +1,26 @@
+//Combine all image volumes from scan 20230823
+path=/autofs/space/linen_001/users/Yixin/20230823_process
+cd /autofs/space/linen_001/users/Yixin/20230823_process/
+mrcat s1_D13ms_PA/dwi.mif s2_D13ms_32dirs/dwi.mif s3_D13ms_64dirs/dwi.mif s4_D30ms_32dirs/dwi.mif s5_D30ms_64dirs/dwi.mif -axis 3 combined/nii/dwi.mif -force
 
+//Combine all image volumes from scan 20230825
+path=/autofs/space/linen_001/users/Yixin/20230825_process
+for folder in {ADJUST,ORIG};do
+cd /autofs/space/linen_001/users/Yixin/20230825_process/${folder}
+mrcat s1_D13ms_PA/dwi.mif s2_D13ms_64dirs/dwi.mif s3_D21ms_64dirs/dwi.mif s4_D30ms_64dirs/dwi.mif -axis 3 combined/nii/dwi.mif -force
+done
+
+//Perform gibbs ringing removal
+path=/autofs/space/linen_001/users/Yixin/
+for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
+cd ${path}/${folder}/combined
+mkdir degibbs
+mrdegibbs nii/dwi.mif degibbs/dwi.mif
+done
+
+//run TopUp
+
+
+//Run Grad Nonlinear correction on MPRAGE
+//Send corrected MPRAGE to run FreeSurfer
+//
