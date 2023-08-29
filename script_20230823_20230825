@@ -94,6 +94,18 @@ eddy_openmp --imain=degibbs/dwi.nii.gz \
 --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/b0s_topup --out=${eddy_folder}/dwi_eddy \
 --data_is_shelled --verbose --niter=8 
 
+//gradient non-linear correction
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230823_process/combined';
+rooti = fullfile(root,'eddy3');
+rooto = fullfile(root,'gradnonlin');
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['dwi_eddy.nii.gz']),...
+fullfile(rooto,['dwi.nii.gz']) ));
+
 
 //Run Grad Nonlinear correction on MPRAGE
 //Send corrected MPRAGE to run FreeSurfer
