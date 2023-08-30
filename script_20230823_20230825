@@ -117,3 +117,13 @@ dwiextract eddy3/dwi.mif -bzero eddy3_dwi/dwi_b0s.nii.gz
 //Run Grad Nonlinear correction on MPRAGE
 //Send corrected MPRAGE to run FreeSurfer
 //
+
+//noise map estimation
+path=/autofs/space/linen_001/users/Yixin/
+folder=20230823_process/combined
+cd ${path}/${folder}/eddy3
+mkdir ../noise
+mrconvert dwi.mif -coord 3 0:9 ../noise/dwi_10b0s.mif -force
+mrmath ../noise/dwi_10b0s.mif std ../noise/dwi_10b0s_std.nii.gz -axis 3 -force
+mrfilter ../noise/dwi_10b0s_std.nii.gz median ../noise/dwi_10b0s_std_median.nii.gz -extent 11 -force
+
