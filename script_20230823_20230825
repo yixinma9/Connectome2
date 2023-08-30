@@ -106,6 +106,13 @@ roothcp,...
 fullfile(rooti,['dwi_eddy.nii.gz']),...
 fullfile(rooto,['dwi.nii.gz']) ));
 
+// make .mif
+path=/autofs/space/linen_001/users/Yixin/
+folder=20230823_process/combined
+cd ${path}/${folder}
+mrconvert eddy3/dwi_eddy.nii.gz -fslgrad eddy3/dwi_eddy.eddy_rotated_bvecs degibbs/bvals eddy3/dwi.mif
+dwiextract eddy/dwi.mif -no_bzeros eddy3_dwi/dwi.nii.gz
+
 
 //Run Grad Nonlinear correction on MPRAGE
 //Send corrected MPRAGE to run FreeSurfer
