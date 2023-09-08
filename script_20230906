@@ -1,0 +1,33 @@
+path=/autofs/space/linen_001/users/Yixin/20230906_process
+for folder in {ORIG,ADJUST};do
+
+//combined all dwi images into one
+cd ${path}/${folder}
+mrcat s1_ep2d_D13ms_PA/dwi.mif s2_ep2d_D13ms_32dir/dwi.mif \
+s3_ep2d_D13ms_64dir/dwi.mif s4_ep2d_D26ms_32dir/dwi.mif s5_ep2d_D26ms_64dir/dwi.mif -axis 3 \
+combined/dwi.mif
+
+//mrdegibbs
+cd ${path}/${folder}/combined
+mkdir ${path}/${folder}/combined/degibbs
+mrdegibbs dwi.mif degibbs/dwi.mif
+mrconvert degibbs/dwi.mif degibbs/dwi.nii.gz -export_grad_fsl degibbs/bvecs degibbs/bvals
+
+//topup preparation
+cd ${path}/${folder}/combined
+mkdir topup
+mrconvert degibbs/dwi.mif -coord 3 8:9 degibbs/temp1.mif -force
+mrconvert degibbs/dwi.mif -coord 3 10:11 degibbs/temp2.mif -force
+mrmath degibbs/temp1.mif mean degibbs/temp1_mean.nii.gz -axis 3 -force
+mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
+mrcat degibbs/temp2_mean.nii.gz degibbs/temp1_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
+
+//run topup
+cd ${path}/${folder}/combined
+setup=/autofs/space/linen_001/users/Yixin/setup
+topup --imain=topup/b0s.nii.gz --datain=${setup}/acqparams.txt --config=${setup}/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
+
+done
+
+
+
