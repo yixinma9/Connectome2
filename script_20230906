@@ -27,6 +27,31 @@ cd ${path}/${folder}/combined
 setup=/autofs/space/linen_001/users/Yixin/setup
 topup --imain=topup/b0s.nii.gz --datain=${setup}/acqparams.txt --config=${setup}/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
 
+// make .mif
+path=/autofs/space/linen_001/users/Yixin/20230906_process/
+for dfc in {ADJUST,ORIG};do
+  for folder in {eddy_cuda,eddy_openmp};do
+    cd ${path}/${dfc}/combined
+    mkdir ${folder}_dwi
+    mrconvert ${folder}/dwi_eddy.nii.gz -fslgrad ${folder}/dwi_eddy.eddy_rotated_bvecs degibbs/bvals ${folder}/dwi.mif
+    dwiextract ${folder}/dwi.mif -no_bzero ${folder}_dwi/dwi.nii.gz
+    dwiextract ${folder}/dwi.mif -bzero ${folder}_dwi/dwi_b0s.nii.gz
+    done
+done
+
+//noise map estimation
+path=/autofs/space/linen_001/users/Yixin/20230906_process/
+for dfc in {ADJUST,ORIG};do
+  for folder in {eddy_cuda,eddy_openmp};do
+    cd ${path}/${dfc}/combined
+    mkdir ${folder}_noise
+    mrconvert ${folder}/dwi.mif -coord 3 0:9 ${folder}_noise/dwi_10b0s.mif -force
+    mrmath ${folder}_noise/dwi_10b0s.mif std ${folder}_noise/dwi_10b0s_std.nii.gz -axis 3 -force
+    mrfilter ${folder}_noise/dwi_10b0s_std.nii.gz median ${folder}_noise/dwi_10b0s_std_median.nii.gz -extent 11 -force
+  done
+done
+
+
 done
 
 
