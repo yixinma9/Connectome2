@@ -1,0 +1,175 @@
+//Combine all image volumes from scan 20230915
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+cd /autofs/space/linen_001/users/Yixin/20230915_process/
+for magphase in {mag,phase};do
+    connectome=C2
+    mrcat ep2d_diff_${connectome}_PA_${magphase}.mif \
+    ep2d_diff_${connectome}_D13_d6_32dirs_${magphase}.mif \
+    ep2d_diff_${connectome}_D13_d6_64dirs_${magphase}.mif \
+    ep2d_diff_${connectome}_D30_d6_32dirs_${magphase}.mif \
+    ep2d_diff_${connectome}_D30_d6_64dirs_${magphase}.mif \
+    -axis 3 ${connectome}/dwi_${magphase}.mif
+    
+    connectome=C1
+    mrcat ep2d_diff_${connectome}_PA_${magphase}.mif \
+    ep2d_diff_${connectome}_D19_d8_32dirs_${magphase}.mif \
+    ep2d_diff_${connectome}_D19_d8_64dirs_${magphase}.mif \
+    ep2d_diff_${connectome}_D49_d8_32dirs_${magphase}.mif \
+    ep2d_diff_${connectome}_D49_d8_64dirs_${magphase}.mif \
+    -axis 3 ${connectome}/dwi_${magphase}.mif
+done
+
+//Export the bvecs and bvals
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+cd /autofs/space/linen_001/users/Yixin/20230915_process/
+for magphase in {mag,phase};do
+    for connectome in {C1,C2};do
+        mrconvert ${connectome}/dwi_${magphase}.mif ${connectome}/dwi_${magphase}.nii.gz -export_grad_fsl ${connectome}/bvecs ${connectome}/bvals -force
+    done
+done
+
+//POCS
+addpath(genpath('/autofs/space/symphony_002/users/HongHsi/data/HCP/tool/RealDiffusion'));
+path='/autofs/space/linen_001/users/Yixin/20230915_process/'
+connectome='C1'
+mag = niftiread(fullfile(path,connectome,'dwi_mag.nii.gz'));
+phase = niftiread(fullfile(path,connectome,'dwi_mag.nii.gz'));
+phi = double(phase)./(2^12-1)*2*pi;
+img = double(mag).*exp(1j*phi);
+tic;
+PE_dim = 2;
+PF = 6/8;
+ExtraCropPElines = 0;
+POCS_flag = 1;
+img_real = RealDiffusion_lowRes_qf(img, PE_dim, PF, ExtraCropPElines, POCS_flag);
+toc;
+niftiwrite(img_real,fullfile(path,connectome,'dwi_real.nii'),fullfile(rootdwi,'dwi_magnitude.nii'));
+
+
+//Perform gibbs ringing removal
+path=/autofs/space/linen_001/users/Yixin/
+#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
+for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
+cd ${path}/${folder}/combined
+mkdir degibbs
+rm bvals 
+rm bvecs
+mrdegibbs nii/dwi.mif degibbs/dwi.mif
+mrconvert degibbs/dwi.mif degibbs/dwi.nii.gz -export_grad_fsl degibbs/bvecs degibbs/bvals -force
+done
+
+//run TopUp
+8-9 are PA
+10-11 are AP
+
+//run topup using the averaged b0s from s5 and s6
+path=/autofs/space/linen_001/users/Yixin/
+#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
+for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
+cd ${path}/${folder}/combined
+mkdir topup
+mrconvert degibbs/dwi.mif -coord 3 8:9 degibbs/temp1.mif -force
+mrconvert degibbs/dwi.mif -coord 3 10:11 degibbs/temp2.mif -force
+mrmath degibbs/temp1.mif mean degibbs/temp1_mean.nii.gz -axis 3 -force
+mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
+mrcat degibbs/temp2_mean.nii.gz degibbs/temp1_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
+done
+
+path=/autofs/space/linen_001/users/Yixin/
+#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
+for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
+cd ${path}/${folder}/combined
+topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
+done
+
+//generate mask
+for folder in {20230823_process,20230825_process/ORIG};do
+#
+path=/autofs/space/linen_001/users/Yixin/
+for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
+cd ${path}/${folder}/combined/topup
+mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3 -force
+bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m -g 0.05 -f 0.4
+#generate gm mask from b0s_topup_mean_bet.nii.gz
+fast --type=2 --class=4 --out=b0s_topup_mean_fast b0s_topup_mean_bet.nii.gz 
+mrcalc b0s_topup_mean_fast_seg.nii.gz 1.5 -gt b0s_topup_mean_fast_seg_wmgm.nii.gz -force
+done
+
+
+
+//generate idex.txt file for eddy
+A = ones(1351,1);
+A([1:10]) = 2;
+fileID = fopen('index.txt','w');
+nbytes = fprintf(fileID,'%5d',A)
+
+//run eddy
+for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
+path=/autofs/space/linen_001/users/Yixin/
+folder=20230823_process/ORIG
+cd ${path}/${folder}/combined
+mkdir eddy
+eddy_openmp --imain=degibbs/dwi.nii.gz --mask=topup/b0s_topup_mean_bet_mask.nii \
+--acqp=topup/acqparams.txt --index=eddy/index.txt --bvecs=degibbs/bvecs --bvals=degibbs/bvals \
+--topup=topup/b0s_topup --out=eddy/dwi_eddy --data_is_shelled --verbose
+
+path=/autofs/space/linen_001/users/Yixin/
+folder=20230825_process/ADJUST
+cd ${path}/${folder}/combined
+
+eddy_folder=eddy1
+mkdir ${eddy_folder}
+/usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 --imain=degibbs/dwi.nii.gz \
+--mask=topup/b0s_topup_mean_bet_mask.nii --acqp=topup/acqparams.txt --index=eddy/index.txt \
+--bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/b0s_topup --out=${eddy_folder}/dwi_eddy \
+--data_is_shelled --verbose --niter=8 --fwhm=10,8,4,2,0,0,0,0 --repol --ol_pos --ol_nstd=4 \
+--ol_type=both --ol_sqr --mb=2 --estimate_move_by_susceptibility
+
+eddy_folder=eddy2
+mkdir ${eddy_folder}
+/usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 --imain=degibbs/dwi.nii.gz \
+--mask=topup/b0s_topup_mean_bet_mask.nii --acqp=topup/acqparams.txt --index=eddy/index.txt \
+--bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/b0s_topup --out=${eddy_folder}/dwi_eddy \
+--data_is_shelled --verbose --niter=8 --repol --ol_pos --ol_nstd=4 \
+--ol_type=both --ol_sqr --mb=2 --estimate_move_by_susceptibility
+
+eddy_folder=eddy
+mkdir ${eddy_folder}
+eddy_openmp --imain=degibbs/dwi.nii.gz \
+--mask=topup/b0s_topup_mean_bet_mask.nii --acqp=topup/acqparams.txt --index=eddy/index.txt \
+--bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/b0s_topup --out=${eddy_folder}/dwi_eddy \
+--data_is_shelled --verbose --niter=8 
+
+//gradient non-linear correction
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230831_process/MPRAGE_s14';
+rooti = fullfile(root);
+rooto = fullfile(root,'gradnonlin');
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['T1.nii.gz']),...
+fullfile(rooto,['T1_gradnon.nii.gz']) ));
+
+// make .mif
+path=/autofs/space/linen_001/users/Yixin/
+for folder in {20230825_process/ADJUST/combined,20230825_process/ORIG/combined};do
+cd ${path}/${folder}
+mkdir eddy3_dwi
+mrconvert eddy3/dwi_eddy.nii.gz -fslgrad eddy3/dwi_eddy.eddy_rotated_bvecs degibbs/bvals eddy3/dwi.mif
+dwiextract eddy3/dwi.mif -no_bzero eddy3_dwi/dwi.nii.gz
+dwiextract eddy3/dwi.mif -bzero eddy3_dwi/dwi_b0s.nii.gz
+done
+
+//noise map estimation
+path=/autofs/space/linen_001/users/Yixin/
+//folder=20230823_process/combined
+for folder in {20230825_process/ADJUST/combined,20230825_process/ORIG/combined};do
+cd ${path}/${folder}/eddy3
+mkdir ../noise
+mrconvert dwi.mif -coord 3 0:9 ../noise/dwi_10b0s.mif -force
+mrmath ../noise/dwi_10b0s.mif std ../noise/dwi_10b0s_std.nii.gz -axis 3 -force
+mrfilter ../noise/dwi_10b0s_std.nii.gz median ../noise/dwi_10b0s_std_median.nii.gz -extent 11 -force
+done
