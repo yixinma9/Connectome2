@@ -33,7 +33,7 @@ addpath(genpath('/autofs/space/symphony_002/users/HongHsi/data/HCP/tool/RealDiff
 path='/autofs/space/linen_001/users/Yixin/20230915_process/'
 connectome='C1'
 mag = niftiread(fullfile(path,connectome,'dwi_mag.nii.gz'));
-phase = niftiread(fullfile(path,connectome,'dwi_mag.nii.gz'));
+phase = niftiread(fullfile(path,connectome,'dwi_phase.nii.gz'));
 phi = double(phase)./(2^12-1)*2*pi;
 img = double(mag).*exp(1j*phi);
 tic;
@@ -43,6 +43,9 @@ ExtraCropPElines = 0;
 POCS_flag = 1;
 img_real = RealDiffusion_lowRes_qf(img, PE_dim, PF, ExtraCropPElines, POCS_flag);
 toc;
+info = niftiinfo(fullfile(path,connectome,'dwi_phase.nii.gz'));
+info.Datatype="double";
+info.BitsPerPixel=64;
 niftiwrite(img_real,fullfile(path,connectome,'dwi_real.nii'),fullfile(rootdwi,'dwi_magnitude.nii'));
 
 
