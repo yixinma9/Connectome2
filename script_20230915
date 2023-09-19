@@ -28,10 +28,18 @@ for magphase in {mag,phase};do
     done
 done
 
+//Create a fake .nii.gz file just for the header
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+cd /autofs/space/linen_001/users/Yixin/20230915_process/
+for connectome in {C1,C2};do
+    mrconvert ${connectome}/dwi_mag.nii.gz -datatype float64 ${connectome}/dwi_mag_float64.nii.gz
+done
+
+
 //POCS
 addpath(genpath('/autofs/space/symphony_002/users/HongHsi/data/HCP/tool/RealDiffusion'));
 path='/autofs/space/linen_001/users/Yixin/20230915_process/'
-connectome='C1'
+connectome='C2'
 mag = niftiread(fullfile(path,connectome,'dwi_mag.nii.gz'));
 phase = niftiread(fullfile(path,connectome,'dwi_phase.nii.gz'));
 phi = double(phase)./(2^12-1)*2*pi;
@@ -43,33 +51,28 @@ ExtraCropPElines = 0;
 POCS_flag = 1;
 img_real = RealDiffusion_lowRes_qf(img, PE_dim, PF, ExtraCropPElines, POCS_flag);
 toc;
-info = niftiinfo(fullfile(path,connectome,'dwi_phase.nii.gz'));
-info.Datatype="double";
-info.BitsPerPixel=64;
-niftiwrite(img_real,fullfile(path,connectome,'dwi_real.nii'),fullfile(rootdwi,'dwi_magnitude.nii'));
-
+info = niftiinfo(fullfile(path,connectome,'dwi_mag_float64.nii.gz'));
+niftiwrite(img_real,fullfile(path,connectome,'dwi_real.nii'),info);
 
 //Perform gibbs ringing removal
-path=/autofs/space/linen_001/users/Yixin/
-#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
-for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
-cd ${path}/${folder}/combined
+cd /autofs/space/linen_001/users/Yixin/20230915_process/C1
+#mrdegibbs dwi_real.nii dwi_real_degibbs.nii
 mkdir degibbs
-rm bvals 
-rm bvecs
-mrdegibbs nii/dwi.mif degibbs/dwi.mif
-mrconvert degibbs/dwi.mif degibbs/dwi.nii.gz -export_grad_fsl degibbs/bvecs degibbs/bvals -force
-done
+mrconvert dwi_real_degibbs.nii -fslgrad bvecs bvals degibbs/dwi.mif
+
+cd /autofs/space/linen_001/users/Yixin/20230915_process/C2
+#mrdegibbs dwi_real.nii dwi_real_degibbs.nii
+mkdir degibbs
+mrconvert dwi_real_degibbs.nii -fslgrad bvecs bvals degibbs/dwi.mif
 
 //run TopUp
 8-9 are PA
 10-11 are AP
 
 //run topup using the averaged b0s from s5 and s6
-path=/autofs/space/linen_001/users/Yixin/
-#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
-for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
-cd ${path}/${folder}/combined
+path=//autofs/space/linen_001/users/Yixin/20230915_process
+for connectome in {C1,C2};do
+cd ${path}/${connectome}
 mkdir topup
 mrconvert degibbs/dwi.mif -coord 3 8:9 degibbs/temp1.mif -force
 mrconvert degibbs/dwi.mif -coord 3 10:11 degibbs/temp2.mif -force
@@ -78,12 +81,14 @@ mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
 mrcat degibbs/temp2_mean.nii.gz degibbs/temp1_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
 done
 
-path=/autofs/space/linen_001/users/Yixin/
-#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
-for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
-cd ${path}/${folder}/combined
-topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
-done
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+#for connectome in {C1,C2};do
+cd ${path}/${connectome}
+topup --imain=topup/b0s.nii.gz \
+--datain=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--config=/autofs/space/linen_001/users/Yixin/setup/b02b0_yixin_421.cnf \
+--out=topup/b0s_topup --iout=topup/b0s_topup
+#done
 
 //generate mask
 for folder in {20230823_process,20230825_process/ORIG};do
