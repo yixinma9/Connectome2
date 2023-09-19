@@ -188,10 +188,47 @@ mkdir ${eddy_folder}
 --mporder=16 --s2v_niter=5 --s2v_lambda=1 \
 --out=${eddy_folder}/dwi_eddy
 
+//run a hard version of eddy after gradnonlin just to see
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+connectome=C1
+cd ${path}/${connectome}
+eddy_folder=eddy_aftergrad_hard
+mkdir ${eddy_folder}
+/usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 \
+--imain=gradnonlin/dwi_real_degibbs_gradnon.nii.gz \
+--mask=degibbs/mask_all.nii.gz \
+--acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--index=${eddy_folder}/index.txt \
+--bvecs=bvecs --bvals=bvals --topup=../C2/topup/b0s_topup \
+--flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
+--ol_pos --ol_nstd=4 \
+--estimate_move_by_susceptibility \
+--mporder=16 --s2v_niter=5 --s2v_lambda=1 \
+--out=${eddy_folder}/dwi_eddy
+
+//run a hard version of eddy after gradnonlin just to see
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+connectome=C1
+cd ${path}/${connectome}
+eddy_folder=eddy_hard
+mkdir ${eddy_folder}
+/usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 \
+--imain=dwi_real_degibbs.nii \
+--mask=degibbs/mask_all.nii.gz \
+--acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--index=${eddy_folder}/index.txt \
+--bvecs=bvecs --bvals=bvals --topup=../C2/topup/b0s_topup \
+--flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
+--ol_pos --ol_nstd=4 \
+--estimate_move_by_susceptibility \
+--mporder=16 --s2v_niter=5 --s2v_lambda=1 \
+--out=${eddy_folder}/dwi_eddy
+
+
 //gradient non-linear correction
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/20230915_process/C2/';
+root = '/autofs/space/linen_001/users/Yixin/20230915_process/C1/';
 rooti = fullfile(root);
 rooto = fullfile(root,'gradnonlin');
 mkdir(rooto)
