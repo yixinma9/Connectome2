@@ -155,6 +155,21 @@ mkdir ${eddy_folder}
 --flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
 --out=${eddy_folder}/dwi_eddy
 
+//run a easy version of eddy just to see
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+connectome=C1
+cd ${path}/${connectome}
+eddy_folder=eddy_simple
+mkdir ${eddy_folder}
+/usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 --imain=dwi_real_degibbs.nii \
+--mask=topup/b0s_topup_mean_bet_mask.nii \
+--acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--index=${eddy_folder}/index.txt \
+--bvecs=bvecs --bvals=bvals --topup=../C1/topup/b0s_topup \
+--flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
+--out=${eddy_folder}/dwi_eddy
+
+
 //run a easy version of eddy after gradnonlin just to see
 path=/autofs/space/linen_001/users/Yixin/20230915_process
 connectome=C2
