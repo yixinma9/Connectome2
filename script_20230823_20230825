@@ -71,10 +71,8 @@ fileID = fopen('index.txt','w');
 nbytes = fprintf(fileID,'%5d',A)
 
 //run eddy
-for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG,20230831_process/ADJUST,20230831_process/ORIG};do
-
+for folder in {20230906_process/ADJUST,20230906_process/ORIG,20230825_process/ADJUST,20230825_process/ORIG,20230831_process/ADJUST,20230831_process/ORIG};do
 path=/autofs/space/linen_001/users/Yixin/
-folder=20230825_process/ADJUST
 cd ${path}/${folder}/combined
 eddy_folder=eddy_simple_neareset
 mkdir ${eddy_folder}
@@ -82,6 +80,7 @@ eddy_cuda9.1 --imain=degibbs/dwi.nii.gz \
 --mask=topup/b0s_topup_mean_bet_mask.nii --acqp=topup/acqparams.txt --index=eddy/index.txt \
 --bvecs=degibbs/bvecs --bvals=degibbs/bvals_nearest --topup=topup/b0s_topup --out=${eddy_folder}/dwi_eddy \
 --data_is_shelled --verbose --niter=8 
+done
 
 //gradient non-linear correction
 clear
