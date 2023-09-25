@@ -107,6 +107,16 @@ eddy_openmp --imain=degibbs/dwi.nii.gz \
 --bvecs=degibbs/bvecs --bvals=degibbs/bvals --topup=topup/b0s_topup --out=${eddy_folder}/dwi_eddy \
 --data_is_shelled --verbose --niter=8 
 
+path=/autofs/space/linen_001/users/Yixin/
+folder=20230823_process
+cd ${path}/${folder}/combined
+eddy_folder=eddy_simple_neareset_2401
+mkdir ${eddy_folder}
+eddy_openmp --imain=degibbs/dwi.nii.gz \
+--mask=topup/b0s_topup_mean_bet_mask.nii --acqp=topup/acqparams.txt --index=eddy/index.txt \
+--bvecs=degibbs/bvecs --bvals=degibbs/bvals_nearest --topup=topup/b0s_topup --out=${eddy_folder}/dwi_eddy \
+--data_is_shelled --verbose --niter=8 
+
 //gradient non-linear correction
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
