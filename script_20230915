@@ -254,22 +254,21 @@ fullfile(rooti,['dwi_real_degibbs.nii']),...
 fullfile(rooto,['dwi_real_degibbs_gradnon.nii']) ));
 
 // make .mif
-path=/autofs/space/linen_001/users/Yixin/
-for folder in {20230825_process/ADJUST/combined,20230825_process/ORIG/combined};do
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+for folder in {C1,C2};do
 cd ${path}/${folder}
-mkdir eddy3_dwi
-mrconvert eddy3/dwi_eddy.nii.gz -fslgrad eddy3/dwi_eddy.eddy_rotated_bvecs degibbs/bvals eddy3/dwi.mif
-dwiextract eddy3/dwi.mif -no_bzero eddy3_dwi/dwi.nii.gz
-dwiextract eddy3/dwi.mif -bzero eddy3_dwi/dwi_b0s.nii.gz
+mkdir eddy_simple_nearest_dwi
+mrconvert eddy_simple_nearest/dwi_eddy.nii.gz -fslgrad eddy_simple_nearest/dwi_eddy.eddy_rotated_bvecs bvals_nearest eddy_simple_nearest/dwi.mif
+dwiextract eddy_simple_nearest/dwi.mif -no_bzero eddy_simple_nearest_dwi/dwi.nii.gz
+dwiextract eddy_simple_nearest/dwi.mif -bzero eddy_simple_nearest_dwi/dwi_b0s.nii.gz
 done
 
 //noise map estimation
-path=/autofs/space/linen_001/users/Yixin/
-//folder=20230823_process/combined
-for folder in {20230825_process/ADJUST/combined,20230825_process/ORIG/combined};do
-cd ${path}/${folder}/eddy3
-mkdir ../noise
-mrconvert dwi.mif -coord 3 0:9 ../noise/dwi_10b0s.mif -force
-mrmath ../noise/dwi_10b0s.mif std ../noise/dwi_10b0s_std.nii.gz -axis 3 -force
-mrfilter ../noise/dwi_10b0s_std.nii.gz median ../noise/dwi_10b0s_std_median.nii.gz -extent 11 -force
+path=/autofs/space/linen_001/users/Yixin/20230915_process
+for folder in {C1,C2};do
+cd ${path}/${folder}
+mkdir noise
+mrconvert eddy_simple_nearest/dwi.mif -coord 3 0:9 noise/dwi_10b0s.mif -force
+mrmath noise/dwi_10b0s.mif std noise/dwi_10b0s_std.nii.gz -axis 3 -force
+mrfilter noise/dwi_10b0s_std.nii.gz median noise/dwi_10b0s_std_median.nii.gz -extent 5 -force
 done
