@@ -59,14 +59,14 @@ niftiwrite(cat(4,img_real_PA, img_real_AP),fullfile(path,connectome,'dwi_real.ni
 
 //Perform gibbs ringing removal
 cd /autofs/space/linen_001/users/Yixin/20230915_process/C1
-#mrdegibbs dwi_real.nii dwi_real_degibbs.nii
+mrdegibbs dwi_real.nii dwi_real_degibbs.nii -force
 mkdir degibbs
-mrconvert dwi_real_degibbs.nii -fslgrad bvecs bvals degibbs/dwi.mif
+mrconvert dwi_real_degibbs.nii -fslgrad bvecs bvals degibbs/dwi.mif -force
 
 cd /autofs/space/linen_001/users/Yixin/20230915_process/C2
-#mrdegibbs dwi_real.nii dwi_real_degibbs.nii
+mrdegibbs dwi_real.nii dwi_real_degibbs.nii -force
 mkdir degibbs
-mrconvert dwi_real_degibbs.nii -fslgrad bvecs bvals degibbs/dwi.mif
+mrconvert dwi_real_degibbs.nii -fslgrad bvecs bvals degibbs/dwi.mif -force
 
 //run TopUp
 8-9 are PA
