@@ -39,20 +39,23 @@ done
 //POCS
 addpath(genpath('/autofs/space/symphony_002/users/HongHsi/data/HCP/tool/RealDiffusion'));
 path='/autofs/space/linen_001/users/Yixin/20230915_process/'
-connectome='C2'
+connectome='C1'
 mag = niftiread(fullfile(path,connectome,'dwi_mag.nii.gz'));
 phase = niftiread(fullfile(path,connectome,'dwi_phase.nii.gz'));
 phi = double(phase)./(2^12-1)*2*pi;
 img = double(mag).*exp(1j*phi);
+img_PA = img(:,:,:,1:10);
+img_AP = img(:,:,:,11:end);
 tic;
 PE_dim = 2;
 PF = 6/8;
 ExtraCropPElines = 0;
 POCS_flag = 1;
-img_real = RealDiffusion_lowRes_qf(img, PE_dim, PF, ExtraCropPElines, POCS_flag);
+img_real_PA = RealDiffusion_lowRes_qf(img_PA, PE_dim, PF, ExtraCropPElines, POCS_flag);
+img_real_AP = rot90(RealDiffusion_lowRes_qf(rot90(img_AP,2), PE_dim, PF, ExtraCropPElines, POCS_flag),2);
 toc;
 info = niftiinfo(fullfile(path,connectome,'dwi_mag_float64.nii.gz'));
-niftiwrite(img_real,fullfile(path,connectome,'dwi_real.nii'),info);
+niftiwrite(cat(4,img_real_PA, img_real_AP),fullfile(path,connectome,'dwi_real.nii'),info);
 
 //Perform gibbs ringing removal
 cd /autofs/space/linen_001/users/Yixin/20230915_process/C1
