@@ -145,7 +145,7 @@ eddy_folder=eddy_hard
 path=/autofs/space/linen_001/users/Yixin/20230915_process
 connectome=C2
 cd ${path}/${connectome}
-eddy_folder=eddy_simple
+eddy_folder=eddy_simple_nearest_2401
 mkdir ${eddy_folder}
 /usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 --imain=dwi_real_degibbs.nii \
 --mask=topup/b0s_topup_mean_bet_mask.nii \
@@ -159,7 +159,7 @@ mkdir ${eddy_folder}
 path=/autofs/space/linen_001/users/Yixin/20230915_process
 connectome=C1
 cd ${path}/${connectome}
-eddy_folder=eddy_simple
+eddy_folder=eddy_simple_nearest_2401
 mkdir ${eddy_folder}
 /usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 --imain=dwi_real_degibbs.nii \
 --mask=topup/b0s_topup_mean_bet_mask.nii \
