@@ -127,7 +127,7 @@ mkdir ${eddy_folder}
 --mporder=16 --s2v_niter=5 --s2v_lambda=1 \
 --out=${eddy_folder}/dwi_eddy
 
-//run a easy version of eddy just to see
+//run a easy version of eddy on C2
 path=/autofs/space/linen_001/users/Yixin/20230915_process
 connectome=C2
 cd ${path}/${connectome}
@@ -141,7 +141,7 @@ eddy_cuda9.1 --imain=dwi_real_degibbs.nii \
 --flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
 --out=${eddy_folder}/dwi_eddy
 
-//run a easy version of eddy just to see
+//run a easy version of eddy on C1
 path=/autofs/space/linen_001/users/Yixin/20230915_process
 connectome=C1
 cd ${path}/${connectome}
