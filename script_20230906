@@ -27,6 +27,35 @@ cd ${path}/${folder}/combined
 setup=/autofs/space/linen_001/users/Yixin/setup
 topup --imain=topup/b0s.nii.gz --datain=${setup}/acqparams.txt --config=${setup}/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
 
+//run eddy: same as 20230825 and 20230831
+
+//gradient non-linear correction on DWI images - ADJUST
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230906_process/ADJUST/combined/';
+rooti = fullfile(root, 'eddy_simple_neareset');
+rooto = fullfile(root, 'gradnonlin');
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['dwi_eddy.nii.gz']),...
+fullfile(rooto,['dwi_gradnon.nii.gz']) ));
+
+//gradient non-linear correction on DWI images - ORIG
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230906_process/ORIG/combined/';
+rooti = fullfile(root, 'eddy_simple_neareset');
+rooto = fullfile(root, 'gradnonlin');
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['dwi_eddy.nii.gz']),...
+fullfile(rooto,['dwi_gradnon.nii.gz']) ));
+
+
 // make .mif
 path=/autofs/space/linen_001/users/Yixin/20230906_process/
 for dfc in {ADJUST,ORIG};do
