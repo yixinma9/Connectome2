@@ -83,6 +83,33 @@ eddy_cuda9.1 --imain=degibbs/dwi.nii.gz \
 --data_is_shelled --verbose --niter=8 
 done
 
+//gradient non-linear correction on DWI images - ADJUST
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230825_process/ADJUST/combined/';
+rooti = fullfile(root, 'eddy_simple_neareset');
+rooto = fullfile(root, 'gradnonlin');
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['dwi_eddy.nii.gz']),...
+fullfile(rooto,['dwi_gradnon.nii.gz']) ));
+
+//gradient non-linear correction on DWI images - ORIG
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/20230825_process/ORIG/combined/';
+rooti = fullfile(root, 'eddy_simple_neareset');
+rooto = fullfile(root, 'gradnonlin');
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['dwi_eddy.nii.gz']),...
+fullfile(rooto,['dwi_gradnon.nii.gz']) ));
+
+
 //gradient non-linear correction
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
