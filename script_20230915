@@ -136,7 +136,7 @@ mkdir ${eddy_folder}
 /usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 --imain=dwi_real_degibbs.nii \
 --mask=topup/b0s_topup_mean_bet_mask.nii \
 --acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
---index=${eddy_folder}/index.txt \
+--index=index.txt \
 --bvecs=bvecs --bvals=bvals --topup=topup/b0s_topup \
 --flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
 --out=${eddy_folder}/dwi_eddy
@@ -148,10 +148,10 @@ cd ${path}/${connectome}
 eddy_folder=eddy_simple_nearest_2401
 mkdir ${eddy_folder}
 /usr/pubsw/packages/fsl/6.0.4/bin/eddy_cuda9.1 --imain=dwi_real_degibbs.nii \
---mask=topup/b0s_topup_mean_bet_mask.nii \
+--mask=../C2/topup/b0s_topup_mean_bet_mask.nii \
 --acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
---index=${eddy_folder}/index.txt \
---bvecs=bvecs --bvals=bvals --topup=../C1/topup/b0s_topup \
+--index=index.txt \
+--bvecs=bvecs --bvals=bvals --topup=../C2/topup/b0s_topup \
 --flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
 --out=${eddy_folder}/dwi_eddy
 
