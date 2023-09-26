@@ -73,6 +73,7 @@ nbytes = fprintf(fileID,'%5d',A)
 //run eddy
 for folder in {20230906_process/ADJUST,20230906_process/ORIG,20230825_process/ADJUST,20230825_process/ORIG,20230831_process/ADJUST,20230831_process/ORIG};do
 for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
+folder=20230823_process
 path=/autofs/space/linen_001/users/Yixin/
 cd ${path}/${folder}/combined
 eddy_folder=eddy_simple_neareset
