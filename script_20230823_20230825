@@ -87,7 +87,7 @@ done
 //gradient non-linear correction on DWI images - ADJUST
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/20230825_process/ADJUST/combined/';
+root = '/autofs/space/linen_001/users/Yixin/20230831_process/ADJUST/combined/';
 rooti = fullfile(root, 'eddy_simple_neareset');
 rooto = fullfile(root, 'gradnonlin');
 mkdir(rooto)
@@ -100,7 +100,7 @@ fullfile(rooto,['dwi_gradnon.nii.gz']) ));
 //gradient non-linear correction on DWI images - ORIG
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/20230825_process/ORIG/combined/';
+root = '/autofs/space/linen_001/users/Yixin/20230831_process/ORIG/combined/';
 rooti = fullfile(root, 'eddy_simple_neareset');
 rooto = fullfile(root, 'gradnonlin');
 mkdir(rooto)
