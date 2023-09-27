@@ -173,18 +173,18 @@ fullfile(rooto,['dwi_real_degibbs_gradnon.nii']) ));
 path=/autofs/space/linen_001/users/Yixin/20230915_process
 for folder in {C1,C2};do
 cd ${path}/${folder}
-mkdir eddy_simple_nearest_dwi
-mrconvert eddy_simple_nearest/dwi_eddy.nii.gz -fslgrad eddy_simple_nearest/dwi_eddy.eddy_rotated_bvecs bvals_nearest eddy_simple_nearest/dwi.mif
-dwiextract eddy_simple_nearest/dwi.mif -no_bzero eddy_simple_nearest_dwi/dwi.nii.gz
-dwiextract eddy_simple_nearest/dwi.mif -bzero eddy_simple_nearest_dwi/dwi_b0s.nii.gz
+mkdir eddy_simple_nearest_2401_dwi
+mrconvert eddy_simple_nearest_2401/dwi_eddy.nii.gz -fslgrad eddy_simple_nearest_2401/dwi_eddy.eddy_rotated_bvecs bvals_nearest eddy_simple_nearest_2401/dwi.mif
+dwiextract eddy_simple_nearest_2401/dwi.mif -no_bzero eddy_simple_nearest_2401_dwi/dwi.nii.gz
+dwiextract eddy_simple_nearest_2401/dwi.mif -bzero eddy_simple_nearest_2401_dwi/dwi_b0s.nii.gz
 done
 
 //noise map estimation
 path=/autofs/space/linen_001/users/Yixin/20230915_process
 for folder in {C1,C2};do
 cd ${path}/${folder}
-mkdir noise
-mrconvert eddy_simple_nearest/dwi.mif -coord 3 0:9 noise/dwi_10b0s.mif -force
-mrmath noise/dwi_10b0s.mif std noise/dwi_10b0s_std.nii.gz -axis 3 -force
-mrfilter noise/dwi_10b0s_std.nii.gz median noise/dwi_10b0s_std_median.nii.gz -extent 5 -force
+mkdir eddy_simple_nearest_2401_noise
+mrconvert eddy_simple_nearest_2401/dwi.mif -coord 3 0:9 eddy_simple_nearest_2401_noise/dwi_10b0s.mif -force
+mrmath eddy_simple_nearest_2401_noise/dwi_10b0s.mif std eddy_simple_nearest_2401_noise/dwi_10b0s_std.nii.gz -axis 3 -force
+mrfilter eddy_simple_nearest_2401_noise/dwi_10b0s_std.nii.gz median eddy_simple_nearest_2401_noise/dwi_10b0s_std_median.nii.gz -extent 11 -force
 done
