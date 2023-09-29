@@ -81,12 +81,19 @@ topup --imain=p2_topup/b0s.nii.gz \
 --out=p2_topup/b0s_topup --iout=p2_topup/b0s_topup
 done
 
+//generate mask
+for exam in {20230920,20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process/p2_topup
+mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3 -force
+bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
+done
+
 //prepare for eddy
 for exam in 20230920;do
   cd /autofs/space/linen_001/users/Yixin/${exam}_process
   mkdir p3_pre_eddy
   mrconvert p1_degibbs/s2.mif -coord 3 0 p2_topup/AP_b0.mif -force
- mrconvert p1_degibbs/s2.mif p3_pre_eddy/s2.nii.gz -export_grad_fsl p3_pre_eddy/bvecs_s2 p3_pre_eddy/bvals_s2 -force
+  mrconvert p1_degibbs/s2.mif p3_pre_eddy/s2.nii.gz -export_grad_fsl p3_pre_eddy/bvecs_s2 p3_pre_eddy/bvals_s2 -force
   for file in {s3,s4,s5};do
     echo "Processing $file"
     mrcat p2_topup/AP_b0.mif p1_degibbs/${file}.mif p3_pre_eddy/${file}_b0_front.mif -force
@@ -110,7 +117,7 @@ done
 // mode the bvals files
 matlab -nodesktop
 for exam = ["20230920","20230922","20230925","20230927","20230928"]
-  cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/p3'])
+  cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/'])
   files = dir(fullfile('p3_pre_eddy', 'bvals*')); 
   for i = 1:size(files,1)
       file = files(i)
@@ -124,22 +131,33 @@ for exam = ["20230920","20230922","20230925","20230927","20230928"]
       fileID = fopen(fullfile(file.folder,[file.name,'_mod']),'w')
       fprintf(fileID, '%g ', bvals);
   end
-done
+end
 
+matlab -nodesktop
+for exam = ["20230920","20230922","20230925","20230927","20230928"]
+  cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/'])
+  files = dir(fullfile('p3_pre_eddy', 'bvals*')); 
+  for i = 1:size(files,1)
+    file = files(i)
+    bvals_orig = table2array(readtable(fullfile(file.folder,file.name))); 
+    A = ones(size(bvals,1));
+    fileID = fopen(fullfile('p3_pre_eddy', ['index_' file.name(7:8) '.txt']),'w');
+    nbytes = fprintf(fileID,'%5d',A)
+  end
+end
 
 //run eddy
 for exam in {20230920,20230922,20230925,20230927,20230928};do
-  for file in *_mag.mif
-  do
+  cd /autofs/space/linen_001/users/Yixin/${exam}_process/p3_pre_eddy
+  for file in s*; do
     echo "Processing $file"
-    mrdegibbs ${file} p1_degibbs/${file:0:2}.mif
-    /usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 --imain=dwi_real_degibbs.nii \
-    --mask=topup/b0s_topup_mean_bet_mask.nii \
+    /usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 --imain=${file} \
+    --mask=..p2_topup/b0s_topup_mean_bet_mask.nii \
     --acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
     --index=index.txt \
     --bvecs=bvecs --bvals=bvals_nearest --topup=topup/b0s_topup \
     --flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
     --out=${eddy_folder}/dwi_eddy
-  done
+    done
 done
 
