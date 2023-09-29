@@ -143,7 +143,7 @@ connectome=C2
 cd ${path}/${connectome}
 eddy_folder=eddy_simple_nearest_2401
 mkdir ${eddy_folder}
-eddy_cuda9.1 --imain=dwi_real_degibbs.nii \
+/usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 --imain=dwi_real_degibbs.nii \
 --mask=topup/b0s_topup_mean_bet_mask.nii \
 --acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
 --index=index.txt \
