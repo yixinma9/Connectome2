@@ -33,3 +33,113 @@ mrconvert ../${exam} s4_ep2d_diff_C2_D30_d6_32dirs_phase.mif 11
 
 mrconvert ../${exam} s5_ep2d_diff_C2_D30_d6_64dirs_mag.mif 13
 mrconvert ../${exam} s5_ep2d_diff_C2_D39_d6_64dirs_phase.mif
+
+# reverse the first session's dwi_image
+for exam in {20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process
+mrconvert s1_ep2d_diff_C2_D30_d6_64dirs_mag.mif -coord 3 end:0 s1_ep2d_diff_C2_D30_d6_64dirs_mag_reverse_order.mif
+mrconvert s1_ep2d_diff_C2_D30_d6_64dirs_mag_reverse_order.mif -coord 3
+done
+
+for exam in {20230920,20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process
+mkdir p1_degibbs
+for file in *_mag.mif
+do
+  echo "Processing $file"
+  mrdegibbs ${file} p1_degibbs/${file:0:2}.mif
+done
+done
+
+//prepare for the eddy
+for exam in 20230920;do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process
+mkdir p2_topup
+mrconvert p1_degibbs/s1.mif -coord 3 8:9 p2_topup/PA_2b0s.nii.gz -force
+mrconvert p1_degibbs/s2.mif -coord 3 0:1 p2_topup/AP_2b0s.nii.gz -force
+mrmath p2_topup/PA_2b0s.nii.gz mean p2_topup/PA_2b0s_mean.nii.gz -axis 3 -force
+mrmath p2_topup/AP_2b0s.nii.gz mean p2_topup/AP_2b0s_mean.nii.gz -axis 3 -force
+mrcat p2_topup/AP_2b0s_mean.nii.gz p2_topup/PA_2b0s_mean.nii.gz -axis 3 p2_topup/b0s.nii.gz -force
+done
+
+for exam in {20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process
+mkdir p2_topup
+mrconvert p1_degibbs/s2.mif -coord 3 8:9 p2_topup/PA_2b0s.nii.gz -force
+mrconvert p1_degibbs/s3.mif -coord 3 0:1 p2_topup/AP_2b0s.nii.gz -force
+mrmath p2_topup/PA_2b0s.nii.gz mean p2_topup/PA_2b0s_mean.nii.gz -axis 3 -force
+mrmath p2_topup/AP_2b0s.nii.gz mean p2_topup/AP_2b0s_mean.nii.gz -axis 3 -force
+mrcat p2_topup/AP_2b0s_mean.nii.gz p2_topup/PA_2b0s_mean.nii.gz -axis 3 p2_topup/b0s.nii.gz -force
+done
+
+//run TopUp
+for exam in {20230920,20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process
+topup --imain=p2_topup/b0s.nii.gz \
+--datain=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--config=/autofs/space/linen_001/users/Yixin/setup/b02b0_yixin_421.cnf \
+--out=p2_topup/b0s_topup --iout=p2_topup/b0s_topup
+done
+
+//prepare for eddy
+for exam in 20230920;do
+  cd /autofs/space/linen_001/users/Yixin/${exam}_process
+  mkdir p3_pre_eddy
+  mrconvert p1_degibbs/s2.mif -coord 3 0 p2_topup/AP_b0.mif -force
+ mrconvert p1_degibbs/s2.mif p3_pre_eddy/s2.nii.gz -export_grad_fsl p3_pre_eddy/bvecs_s2 p3_pre_eddy/bvals_s2 -force
+  for file in {s3,s4,s5};do
+    echo "Processing $file"
+    mrcat p2_topup/AP_b0.mif p1_degibbs/${file}.mif p3_pre_eddy/${file}_b0_front.mif -force
+    mrconvert p3_pre_eddy/${file}_b0_front.mif p3_pre_eddy/${file}_b0_front.nii.gz -export_grad_fsl p3_pre_eddy/bvecs_${file} p3_pre_eddy/bvals_${file} -force
+  done
+done
+
+for exam in {20230922,20230925,20230927,20230928};do
+  cd /autofs/space/linen_001/users/Yixin/${exam}_process
+  mkdir p3_pre_eddy
+  rm p2_topup/AP_2b0s*.mif
+  mrconvert p1_degibbs/s3.mif -coord 3 0 p2_topup/AP_b0.mif -force
+  mrconvert p1_degibbs/s3.mif p3_pre_eddy/s3.nii.gz -export_grad_fsl p3_pre_eddy/bvecs_s3 p3_pre_eddy/bvals_s3 -force
+  for file in {s1,s4,s5};do
+    echo "Processing $file"
+    mrcat p2_topup/AP_b0.mif p1_degibbs/${file}.mif p3_pre_eddy/${file}_b0_front.mif -force
+    mrconvert p3_pre_eddy/${file}_b0_front.mif p3_pre_eddy/${file}_b0_front.nii.gz -export_grad_fsl p3_pre_eddy/bvecs_${file} p3_pre_eddy/bvals_${file} -force
+  done
+done
+
+// mode the bvals files
+matlab -nodesktop
+for exam = ["20230920","20230922","20230925","20230927","20230928"]
+  cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/p3'])
+  files = dir(fullfile('p3_pre_eddy', 'bvals*')); 
+  for i = 1:size(files,1)
+      file = files(i)
+      bvals_orig = table2array(readtable(fullfile(file.folder,file.name)));
+      keys = [0,50,350,800,1500,2400,3450,4750,6000,200,950,2300,4250,6750,9850,13500,17800];
+      differences = abs(bvals_orig - keys');
+      [~, closestKeyIndices] = min(differences, [], 1);
+      closestKeys = keys(closestKeyIndices);
+      bvals = closestKeys;
+      bvals(bvals==2400) = 2401;
+      fileID = fopen(fullfile(file.folder,[file.name,'_mod']),'w')
+      fprintf(fileID, '%g ', bvals);
+  end
+done
+
+
+//run eddy
+for exam in {20230920,20230922,20230925,20230927,20230928};do
+  for file in *_mag.mif
+  do
+    echo "Processing $file"
+    mrdegibbs ${file} p1_degibbs/${file:0:2}.mif
+    /usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 --imain=dwi_real_degibbs.nii \
+    --mask=topup/b0s_topup_mean_bet_mask.nii \
+    --acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+    --index=index.txt \
+    --bvecs=bvecs --bvals=bvals_nearest --topup=topup/b0s_topup \
+    --flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
+    --out=${eddy_folder}/dwi_eddy
+  done
+done
+
