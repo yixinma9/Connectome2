@@ -1,1 +1,43 @@
+mkdir p9_fitting
+mrconvert p5_eddy_mag/dwi_eddy.nii.gz -fslgrad p5_eddy_mag/dwi_eddy.eddy_rotated_bvecs p2_dwi/bvals.txt p9_fitting/dwi.mif
+
+cd /autofs/space/linen_001/users/Yixin/20230823_process/combined
+mrconvert eddy_simple_neareset/dwi_eddy.nii.gz -fslgrad eddy_simple_neareset/dwi_eddy.eddy_rotated_bvecs degibbs/bvals_nearest fitting/dwi.mif
+
+cd /autofs/space/linen_001/users/Yixin/20230915_process/C2
+mrconvert eddy_simple_nearest_2401/dwi_eddy.nii.gz -fslgrad eddy_simple_nearest_2401/dwi_eddy.eddy_rotated_bvecs bvals_nearest fitting/dwi_include_PA.mif
+
+cd fitting
+mrconvert dwi_include_PA.mif dwi.mif -coord 3 10:end 
+dwiextract dwi.mif dwi_bzero.mif -bzero 
+dwidenoise dwi_bzero.mif dwi_bzero_denoised.nii.gz -noise dwi_bzero_noise.nii.gz 
+
+for b in {50,350,800,1500};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 32 -divide -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise_nodivide.nii.gz
+done
+
+for b in {2401,3450,4750,6000};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 64 -divide -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise_nodivide_nodivide.nii.gz
+done
+
+for b in {200,950,2300};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 32 -divide -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise_nodivide.nii.gz
+done
+
+for b in {4250,6750,9850,13500,17800};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 64 -divide -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise_nodivide.nii.gz
+done
+
+
+
+
+
 
