@@ -85,7 +85,8 @@ done
 for exam in {20230920,20230922,20230925,20230927,20230928};do
 cd /autofs/space/linen_001/users/Yixin/${exam}_process/p2_topup
 mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3 -force
-bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
+bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m -f 0.45 
+# -f 0.45 for 20230925 nad 20230927, for other subjects, -f 0.5
 done
 
 //prepare for eddy
@@ -140,7 +141,7 @@ for exam = ["20230920","20230922","20230925","20230927","20230928"]
   for i = 1:size(files,1)
     file = files(i)
     bvals_orig = table2array(readtable(fullfile(file.folder,file.name))); 
-    A = ones(size(bvals,1));
+    A = ones(size(bvals_orig));
     fileID = fopen(fullfile('p3_pre_eddy', ['index_' file.name(7:8) '.txt']),'w');
     nbytes = fprintf(fileID,'%5d',A)
   end
@@ -148,16 +149,18 @@ end
 
 //run eddy
 for exam in {20230920,20230922,20230925,20230927,20230928};do
-  cd /autofs/space/linen_001/users/Yixin/${exam}_process/p3_pre_eddy
-  for file in s*; do
-    echo "Processing $file"
-    /usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 --imain=${file} \
-    --mask=..p2_topup/b0s_topup_mean_bet_mask.nii \
-    --acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
-    --index=index.txt \
-    --bvecs=bvecs --bvals=bvals_nearest --topup=topup/b0s_topup \
-    --flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
-    --out=${eddy_folder}/dwi_eddy
-    done
+cd /autofs/space/linen_001/users/Yixin/${exam}_process/p3_pre_eddy
+for file in s*; do
+mkdir ../p4_eddy_${file:0:2}/
+echo "Processing $file"
+/usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 \
+--imain=${file} \
+--mask=../p2_topup/b0s_topup_mean_bet_mask.nii.gz \
+--acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--index=index_${file:0:2}.txt \
+--bvecs=bvecs_${file:0:2} --bvals=bvals_${file:0:2}_mod --topup=../p2_topup/b0s_topup \
+--flm=cubic --interp=spline --niter=8 --data_is_shelled --cnr_maps --verbose \
+--out=../p4_eddy_${file:0:2}/dwi_eddy
+done
 done
 
