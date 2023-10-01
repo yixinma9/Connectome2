@@ -164,3 +164,63 @@ echo "Processing $file"
 done
 done
 
+for exam in {20230920,20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process/p3_pre_eddy
+rm -r p5_fitting
+mkdir ../p5_fitting
+for file in s*; do
+echo "Processing $file"
+mrconvert ../p4_eddy_${file:0:2}/dwi_eddy.nii.gz -fslgrad bvecs_${file:0:2} bvals_${file:0:2}_mod ../p5_fitting/${file:0:2}.mif -force
+done
+done
+
+for exam in {20230920,20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process/p2_topup
+mrconvert b0s_topup_mean_bet_mask.nii.gz b0s_topup_mean_bet_mask_float64.nii.gz -datatype float64 -force
+done
+
+
+exam=20230920
+cd /autofs/space/linen_001/users/Yixin/${exam}_process/p5_fitting
+mrcat s2.mif s3.mif s4.mif s5.mif dwi.mif -force
+dwiextract dwi.mif -no_bzero dwi_nobzero.nii.gz -force
+dwiextract dwi.mif -bzero dwi_bzero.nii.gz -force
+
+for exam in {20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process/p5_fitting
+mrcat s5.mif s4.mif s3.mif s1.mif dwi.mif -force
+dwiextract dwi.mif -no_bzero dwi_nobzero.nii.gz -force
+dwiextract dwi.mif -bzero dwi_bzero.nii.gz -force
+done
+
+for exam in {20230920,20230922,20230925,20230927,20230928};do
+cd /autofs/space/linen_001/users/Yixin/${exam}_process/p5_fitting
+dwiextract dwi.mif dwi_bzero.mif -bzero 
+dwidenoise dwi_bzero.mif dwi_bzero_denoised.nii.gz -noise dwi_bzero_noise.nii.gz 
+
+for b in {50,350,800,1500};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 32 -divide -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise_nodivide.nii.gz
+done
+
+for b in {2401,3450,4750,6000};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 64 -divide -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D13ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D13ms_b${b}_subtract_noise_nodivide_nodivide.nii.gz
+done
+
+for b in {200,950,2300};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 32 -divide -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise_nodivide.nii.gz
+done
+
+for b in {4250,6750,9850,13500,17800};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow 64 -divide -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise.nii.gz
+mrcalc mean_D30ms_b${b}.nii.gz 2 -pow dwi_bzero_noise.nii.gz 2 -pow -subtract 0 -max -sqrt mean_D30ms_b${b}_subtract_noise_nodivide.nii.gz
+done
+done
+
+
