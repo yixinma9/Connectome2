@@ -1,29 +1,105 @@
+cd /autofs/space/linen_001/users/Yixin/
+for exam in {20230915_RR,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+mkdir ${exam}_process
+cd 20230915_RR_C1_process
+mrconvert ../20230915_RR s1_ep2d_PA.mif 27
+mrconvert ../20230915_RR s2_ep2d_D13ms_32dirs.mif 26
+mrconvert ../20230915_RR s3_ep2d_D13ms_64dirs.mif 25
+mrconvert ../20230915_RR s4_ep2d_D30ms_32dirs.mif 24
+mrconvert ../20230915_RR s5_ep2d_D30ms_64dirs.mif 23
+
+cd 20230915_RR_C2_process
+mrconvert ../20230915_RR s1_ep2d_PA.mif 32
+mrconvert ../20230915_RR s2_ep2d_D13ms_32dirs.mif 31
+mrconvert ../20230915_RR s3_ep2d_D13ms_64dirs.mif 30
+mrconvert ../20230915_RR s4_ep2d_D30ms_32dirs.mif 29
+mrconvert ../20230915_RR s5_ep2d_D30ms_64dirs.mif 28
+
+mkdir /autofs/space/linen_001/users/Yixin/20230920_RR_process
+cd /autofs/space/linen_001/users/Yixin/20230920_RR_process
+mrconvert ../20230920_RR s1_ep2d_PA.mif 26
+mrconvert ../20230920_RR s2_ep2d_D13ms_32dirs.mif 24
+mrconvert ../20230920_RR s3_ep2d_D13ms_64dirs.mif 22
+mrconvert ../20230920_RR s4_ep2d_D30ms_32dirs.mif 20
+mrconvert ../20230920_RR s5_ep2d_D30ms_64dirs.mif 18
+
+mkdir /autofs/space/linen_001/users/Yixin/20230922_RR_process
+cd /autofs/space/linen_001/users/Yixin/20230922_RR_process
+mrconvert ../20230922_RR s1_ep2d_D30ms_64dirs.mif 33
+mrconvert ../20230922_RR s2_ep2d_PA.mif 32
+mrconvert ../20230922_RR s3_ep2d_D30ms_32dirs.mif 31
+mrconvert ../20230922_RR s4_ep2d_D13ms_64dirs.mif 30
+mrconvert ../20230922_RR s5_ep2d_D13ms_32dirs.mif 29
+
+mkdir /autofs/space/linen_001/users/Yixin/20230925_RR_process
+cd /autofs/space/linen_001/users/Yixin/20230925_RR_process
+mrconvert ../20230925_RR s1_ep2d_D30ms_64dirs.mif 17
+mrconvert ../20230925_RR s2_ep2d_PA.mif 16
+mrconvert ../20230925_RR s3_ep2d_D30ms_32dirs.mif 15
+mrconvert ../20230925_RR s4_ep2d_D13ms_64dirs.mif 14
+mrconvert ../20230925_RR s5_ep2d_D13ms_32dirs.mif 13
+
+mkdir /autofs/space/linen_001/users/Yixin/20230927_RR_process
+cd /autofs/space/linen_001/users/Yixin/20230927_RR_process
+mrconvert ../20230927_RR s1_ep2d_D30ms_64dirs.mif 18 
+mrconvert ../20230927_RR s2_ep2d_PA.mif 17
+mrconvert ../20230927_RR s3_ep2d_D30ms_32dirs.mif 16
+mrconvert ../20230927_RR s4_ep2d_D13ms_64dirs.mif 15
+mrconvert ../20230927_RR s5_ep2d_D13ms_32dirs.mif 14
+
+mkdir /autofs/space/linen_001/users/Yixin/20230928_RR_process
+cd /autofs/space/linen_001/users/Yixin/20230928_RR_process
+mrconvert ../20230928_RR s1_ep2d_D30ms_64dirs.mif 17
+mrconvert ../20230928_RR s2_ep2d_PA.mif 16
+mrconvert ../20230928_RR s3_ep2d_D30ms_32dirs.mif 15
+mrconvert ../20230928_RR s4_ep2d_D13ms_64dirs.mif 14
+mrconvert ../20230928_RR s5_ep2d_D13ms_32dirs.mif 13
+
 //Combine all image volumes from scan 20230823
-path=/autofs/space/linen_001/users/Yixin/20230823_process
-cd /autofs/space/linen_001/users/Yixin/20230823_process/
-mrcat s1_D13ms_PA/dwi.mif s2_D13ms_32dirs/dwi.mif s3_D13ms_64dirs/dwi.mif s4_D30ms_32dirs/dwi.mif s5_D30ms_64dirs/dwi.mif -axis 3 combined/nii/dwi.mif -force
+for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}
+mkdir combined
+mkdir combined/p1_nii
+mrcat s1*.mif s2*.mif s3*.mif s4*.mif s5*.mif -axis 3 combined/p1_nii/dwi.mif -force
+done
 
-//Combine all image volumes from scan 20230825
-path=/autofs/space/linen_001/users/Yixin/20230825_process
-
-path=/autofs/space/linen_001/users/Yixin/20230831_process
-for folder in {ADJUST,ORIG};do
-cd /autofs/space/linen_001/users/Yixin/20230831_process/${folder}
-mkdir combined/nii
-mrcat s1_D13ms_PA/dwi.mif s2_D13ms_64dirs/dwi.mif s3_D21ms_64dirs/dwi.mif s4_D30ms_64dirs/dwi.mif -axis 3 combined/nii/dwi.mif -force
+for exam in {20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}
+mkdir combined
+mkdir combined/p1_nii
+mrconvert s1_ep2d_D30_64dirs.mif -coord 3 end:0 s1_ep2d_D30_64dirs_reversed.mif
+mrcat s2*.mif s3*.mif s1*.mif s4*.mif s5*.mif -axis 3 combined/p1_nii/dwi.mif -force
 done
 
 //Perform gibbs ringing removal
 path=/autofs/space/linen_001/users/Yixin/
-#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
-for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
-cd ${path}/${folder}/combined
-mkdir degibbs
-rm bvals 
-rm bvecs
-mrdegibbs nii/dwi.mif degibbs/dwi.mif
-mrconvert degibbs/dwi.mif degibbs/dwi.nii.gz -export_grad_fsl degibbs/bvecs degibbs/bvals -force
+for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}/combined
+mkdir p2_degibbs
+mrdegibbs p1_nii/dwi.mif p2_degibbs/dwi.mif
+mrconvert p2_degibbs/dwi.mif p2_degibbs/dwi.nii.gz -export_grad_fsl p2_degibbs/bvecs p2_degibbs/bvals -force
 done
+
+matlab -nodesktop
+for exam = ["20230915_RR_C1","20230915_RR_C2","20230920_RR","20230922_RR","20230925_RR","20230927_RR","20230928_RR"]
+  cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/combined'])
+  files = dir(fullfile('p2_degibbs', 'bvals*')); 
+  for i = 1:size(files,1)
+      file = files(i)
+      bvals_orig = table2array(readtable(fullfile(file.folder,file.name)));
+      keys = [0,50,350,800,1500,2400,3450,4750,6000,200,950,2300,4250,6750,9850,13500,17800];
+      differences = abs(bvals_orig - keys');
+      [~, closestKeyIndices] = min(differences, [], 1);
+      closestKeys = keys(closestKeyIndices);
+      bvals = closestKeys;
+      bvals(bvals==2400) = 2401;
+      fileID = fopen(fullfile(file.folder,[file.name,'_mod']),'w')
+      fprintf(fileID, '%g ', bvals);
+  end
+end
 
 //run TopUp
 8-9 are PA
@@ -31,22 +107,23 @@ done
 
 //run topup using the averaged b0s from s5 and s6
 path=/autofs/space/linen_001/users/Yixin/
-#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
-for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
-cd ${path}/${folder}/combined
-mkdir topup
-mrconvert degibbs/dwi.mif -coord 3 8:9 degibbs/temp1.mif -force
-mrconvert degibbs/dwi.mif -coord 3 10:11 degibbs/temp2.mif -force
-mrmath degibbs/temp1.mif mean degibbs/temp1_mean.nii.gz -axis 3 -force
-mrmath degibbs/temp2.mif mean degibbs/temp2_mean.nii.gz -axis 3 -force
-mrcat degibbs/temp2_mean.nii.gz degibbs/temp1_mean.nii.gz -axis 3 topup/b0s.nii.gz -force
+for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+cd ${path}/${exam}_process/combined
+mkdir p3_topup
+mrconvert p2_degibbs/dwi.mif -coord 3 8:9 p2_degibbs/temp1.mif -force
+mrconvert p2_degibbs/dwi.mif -coord 3 10:11 p2_degibbs/temp2.mif -force
+mrmath p2_degibbs/temp1.mif mean p2_degibbs/temp1_mean.nii.gz -axis 3 -force
+mrmath p2_degibbs/temp2.mif mean p2_degibbs/temp2_mean.nii.gz -axis 3 -force
+mrcat p2_degibbs/temp2_mean.nii.gz p2_degibbs/temp1_mean.nii.gz -axis 3 p3_topup/b0s.nii.gz -force
 done
 
+for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
 path=/autofs/space/linen_001/users/Yixin/
-#for folder in {20230823_process,20230825_process/ADJUST,20230825_process/ORIG};do
-for folder in {20230831_process/ADJUST,20230831_process/ORIG};do
-cd ${path}/${folder}/combined
-topup --imain=topup/b0s.nii.gz --datain=topup/acqparams.txt --config=topup/b02b0_yixin_421.cnf --out=topup/b0s_topup --iout=topup/b0s_topup
+cd ${path}/${exam}_process/combined
+topup --imain=p3_topup/b0s.nii.gz \
+--datain=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--config=/autofs/space/linen_001/users/Yixin/setup/b02b0_yixin_421.cnf \
+--out=p3_topup/b0s_topup --iout=p3_topup/b0s_topup
 done
 
 //generate mask
@@ -61,7 +138,6 @@ bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m -g 0.05 -f 0.4
 fast --type=2 --class=4 --out=b0s_topup_mean_fast b0s_topup_mean_bet.nii.gz 
 mrcalc b0s_topup_mean_fast_seg.nii.gz 1.5 -gt b0s_topup_mean_fast_seg_wmgm.nii.gz -force
 done
-
 
 
 //generate idex.txt file for eddy
@@ -126,21 +202,20 @@ fullfile(rooto,['T1_gradnon.nii.gz']) ));
 
 // make .mif
 path=/autofs/space/linen_001/users/Yixin/
-for folder in {20230825_process/ADJUST/combined,20230825_process/ORIG/combined};do
+for folder in 20230823_process/combined;do
 cd ${path}/${folder}
-mkdir eddy3_dwi
-mrconvert eddy3/dwi_eddy.nii.gz -fslgrad eddy3/dwi_eddy.eddy_rotated_bvecs degibbs/bvals eddy3/dwi.mif
-dwiextract eddy3/dwi.mif -no_bzero eddy3_dwi/dwi.nii.gz
-dwiextract eddy3/dwi.mif -bzero eddy3_dwi/dwi_b0s.nii.gz
+mkdir eddy_simple_nearest_dwi
+mrconvert eddy_simple_nearest/dwi_eddy.nii.gz -fslgrad eddy_simple_nearest/dwi_eddy.eddy_rotated_bvecs degibbs/bvals_nearest eddy_simple_nearest/dwi.mif
+dwiextract eddy_simple_nearest/dwi.mif -no_bzero eddy_simple_nearest_dwi/dwi.nii.gz
+dwiextract eddy_simple_nearest/dwi.mif -bzero eddy_simple_nearest_dwi/dwi_b0s.nii.gz
 done
 
 //noise map estimation
 path=/autofs/space/linen_001/users/Yixin/
-//folder=20230823_process/combined
-for folder in {20230825_process/ADJUST/combined,20230825_process/ORIG/combined};do
-cd ${path}/${folder}/eddy3
+folder=20230823_process/combined
+cd ${path}/${folder}/eddy_simple_nearest
 mkdir ../noise
 mrconvert dwi.mif -coord 3 0:9 ../noise/dwi_10b0s.mif -force
 mrmath ../noise/dwi_10b0s.mif std ../noise/dwi_10b0s_std.nii.gz -axis 3 -force
 mrfilter ../noise/dwi_10b0s_std.nii.gz median ../noise/dwi_10b0s_std_median.nii.gz -extent 11 -force
-done
+
