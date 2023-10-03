@@ -173,21 +173,40 @@ fullfile(rooti,['T1.nii.gz']),...
 fullfile(rooto,['T1_gradnon.nii.gz']) ));
 
 // make .mif
-path=/autofs/space/linen_001/users/Yixin/
-for folder in 20230823_process/combined;do
+for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
+ 
 cd ${path}/${folder}
-mkdir eddy_simple_nearest_dwi
-mrconvert eddy_simple_nearest/dwi_eddy.nii.gz -fslgrad eddy_simple_nearest/dwi_eddy.eddy_rotated_bvecs degibbs/bvals_nearest eddy_simple_nearest/dwi.mif
-dwiextract eddy_simple_nearest/dwi.mif -no_bzero eddy_simple_nearest_dwi/dwi.nii.gz
-dwiextract eddy_simple_nearest/dwi.mif -bzero eddy_simple_nearest_dwi/dwi_b0s.nii.gz
+mkdir p6_final
+mrconvert p4_eddy/dwi_eddy.nii.gz -fslgrad p4_eddy/dwi_eddy.eddy_rotated_bvecs p2_degibbs/bvals_mod p6_final/dwi.mif
+ 
+cd p6_final
+for b in {50,350,800,1500};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
 done
 
-//noise map estimation
-path=/autofs/space/linen_001/users/Yixin/
-folder=20230823_process/combined
-cd ${path}/${folder}/eddy_simple_nearest
-mkdir ../noise
-mrconvert dwi.mif -coord 3 0:9 ../noise/dwi_10b0s.mif -force
-mrmath ../noise/dwi_10b0s.mif std ../noise/dwi_10b0s_std.nii.gz -axis 3 -force
-mrfilter ../noise/dwi_10b0s_std.nii.gz median ../noise/dwi_10b0s_std_median.nii.gz -extent 11 -force
+for b in {2401,3450,4750,6000};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
+done
 
+for b in {200,950,2300};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
+done
+
+for b in {4250,6750,9850,13500,17800};do
+dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
+done
+
+done
+
+
+//noise map estimation
+for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
+cd ${path}
+mkdir p7_noise_10b0s
+mrconvert p6_final/dwi.mif -coord 3 0:9 p7_noise_10b0s/dwi_10b0s.mif -force
+mrconvert p6_final/dwi.mif p6_final/dwi.nii.gz -export_grad_fsl p6_final/bvals p6_final/bvecs 
+mrmath p7_noise_10b0s/dwi_10b0s.mif std p7_noise_10b0s/dwi_10b0s_std.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s/dwi_10b0s_std.nii.gz median p7_noise_10b0s/dwi_10b0s_std_median.nii.gz -extent 11 -force
+done
