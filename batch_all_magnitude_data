@@ -210,3 +210,10 @@ mrconvert p6_final/dwi.mif p6_final/dwi.nii.gz -export_grad_fsl p6_final/bvecs p
 mrmath p7_noise_10b0s/dwi_10b0s.mif std p7_noise_10b0s/dwi_10b0s_std.nii.gz -axis 3 -force
 mrfilter p7_noise_10b0s/dwi_10b0s_std.nii.gz median p7_noise_10b0s/dwi_10b0s_std_median.nii.gz -extent 11 -force
 done
+
+for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
+cd ${path}
+dwiextract p6_final/dwi.mif p7_noise_10b0s/dwi.nii.gz -no_bzero -force
+dwiextract p6_final/dwi.mif p7_noise_10b0s/dwi_b0s.nii.gz -bzero -force
+done
