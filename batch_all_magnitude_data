@@ -163,15 +163,15 @@ done
 //gradient non-linear correction
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/20230831_process/MPRAGE_s14';
+root = '/autofs/space/linen_001/users/Yixin/20230915_RR_C1_process/combined';
 rooti = fullfile(root);
-rooto = fullfile(root,'gradnonlin');
+rooto = fullfile(root,['p5_gradnonlin']);
 mkdir(rooto)
 roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
 system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
 roothcp,...
-fullfile(rooti,['T1.nii.gz']),...
-fullfile(rooto,['T1_gradnon.nii.gz']) ));
+fullfile(rooti,['p4_eddy'],['dwi_eddy.nii.gz']),...
+fullfile(rooto,['dwi_gradnonlin.nii']) ));
 
 // make .mif
 for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
@@ -199,7 +199,6 @@ dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 
 done
 
 done
-
 
 //noise map estimation
 for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
