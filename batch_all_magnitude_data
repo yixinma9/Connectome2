@@ -206,7 +206,7 @@ path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
 cd ${path}
 mkdir p7_noise_10b0s
 mrconvert p6_final/dwi.mif -coord 3 0:9 p7_noise_10b0s/dwi_10b0s.mif -force
-mrconvert p6_final/dwi.mif p6_final/dwi.nii.gz -export_grad_fsl p6_final/bvals p6_final/bvecs 
+mrconvert p6_final/dwi.mif p6_final/dwi.nii.gz -export_grad_fsl p6_final/bvecs p6_final/bvals
 mrmath p7_noise_10b0s/dwi_10b0s.mif std p7_noise_10b0s/dwi_10b0s_std.nii.gz -axis 3 -force
 mrfilter p7_noise_10b0s/dwi_10b0s_std.nii.gz median p7_noise_10b0s/dwi_10b0s_std_median.nii.gz -extent 11 -force
 done
