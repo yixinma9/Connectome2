@@ -3,62 +3,69 @@ for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,ma
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230920_process
 cd /autofs/space/linen_001/users/Yixin/mag_20230920_process
-mrconvert ../mag_20230920 s1_ep2d_PA.mif 21
-mrconvert ../mag_20230920 s2_ep2d_D13ms_32dirs.mif 
-mrconvert ../mag_20230920 s3_ep2d_D13ms_64dirs.mif 
-mrconvert ../mag_20230920 s4_ep2d_D30ms_32dirs.mif 
-mrconvert ../mag_20230920 s5_ep2d_D30ms_64dirs.mif 
+mrconvert ../mag_20230920 mprage.nii.gz 0
+mrconvert ../mag_20230920 s1_ep2d_PA.mif 1
+mrconvert ../mag_20230920 s2_ep2d_D13ms_32dirs.mif 2
+mrconvert ../mag_20230920 s3_ep2d_D13ms_64dirs.mif 3
+mrconvert ../mag_20230920 s4_ep2d_D30ms_32dirs.mif 4
+mrconvert ../mag_20230920 s5_ep2d_D30ms_64dirs.mif 5
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230922_process
 cd /autofs/space/linen_001/users/Yixin/mag_20230922_process
-mrconvert ../mag_20230922 s1_ep2d_D30ms_64dirs.mif 33
-mrconvert ../mag_20230922 s2_ep2d_PA.mif 32
-mrconvert ../mag_20230922 s3_ep2d_D30ms_32dirs.mif 31
-mrconvert ../mag_20230922 s4_ep2d_D13ms_64dirs.mif 30
-mrconvert ../mag_20230922 s5_ep2d_D13ms_32dirs.mif 29
+mrconvert ../mag_20230922 mprage.nii.gz 0
+mrconvert ../mag_20230922 s1_ep2d_D30ms_64dirs.mif 1
+mrconvert ../mag_20230922 s2_ep2d_PA.mif 2
+mrconvert ../mag_20230922 s3_ep2d_D30ms_32dirs.mif 3
+mrconvert ../mag_20230922 s4_ep2d_D13ms_64dirs.mif 4
+mrconvert ../mag_20230922 s5_ep2d_D13ms_32dirs.mif 5
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230925_process
 cd /autofs/space/linen_001/users/Yixin/mag_20230925_process
-mrconvert ../mag_20230925 s1_ep2d_D30ms_64dirs.mif 17
-mrconvert ../mag_20230925 s2_ep2d_PA.mif 16
-mrconvert ../mag_20230925 s3_ep2d_D30ms_32dirs.mif 15
-mrconvert ../mag_20230925 s4_ep2d_D13ms_64dirs.mif 14
-mrconvert ../mag_20230925 s5_ep2d_D13ms_32dirs.mif 13
+mrconvert ../mag_20230925 mprage.nii.gz 0
+mrconvert ../mag_20230925 s1_ep2d_D30ms_64dirs.mif 1
+mrconvert ../mag_20230925 s2_ep2d_PA.mif 2
+mrconvert ../mag_20230925 s3_ep2d_D30ms_32dirs.mif 3
+mrconvert ../mag_20230925 s4_ep2d_D13ms_64dirs.mif 4
+mrconvert ../mag_20230925 s5_ep2d_D13ms_32dirs.mif 5
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230927_process
 cd /autofs/space/linen_001/users/Yixin/mag_20230927_process
-mrconvert ../mag_20230927 s1_ep2d_D30ms_64dirs.mif 18 
-mrconvert ../mag_20230927 s2_ep2d_PA.mif 17
-mrconvert ../mag_20230927 s3_ep2d_D30ms_32dirs.mif 16
-mrconvert ../mag_20230927 s4_ep2d_D13ms_64dirs.mif 15
-mrconvert ../mag_20230927 s5_ep2d_D13ms_32dirs.mif 14
+mrconvert ../mag_20230927 mprage.nii.gz 0
+mrconvert ../mag_20230927 s1_ep2d_D30ms_64dirs.mif 1 
+mrconvert ../mag_20230927 s2_ep2d_PA.mif 2
+mrconvert ../mag_20230927 s3_ep2d_D30ms_32dirs.mif 3
+mrconvert ../mag_20230927 s4_ep2d_D13ms_64dirs.mif 4
+mrconvert ../mag_20230927 s5_ep2d_D13ms_32dirs.mif 5
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230928_process
 cd /autofs/space/linen_001/users/Yixin/mag_20230928_process
-mrconvert ../mag_20230928 s1_ep2d_D30ms_64dirs.mif 17
-mrconvert ../mag_20230928 s2_ep2d_PA.mif 16
-mrconvert ../mag_20230928 s3_ep2d_D30ms_32dirs.mif 15
-mrconvert ../mag_20230928 s4_ep2d_D13ms_64dirs.mif 14
-mrconvert ../mag_20230928 s5_ep2d_D13ms_32dirs.mif 13
+mrconvert ../mag_20230927 mprage.nii.gz 0
+mrconvert ../mag_20230928 s1_ep2d_D30ms_64dirs.mif 1
+mrconvert ../mag_20230928 s2_ep2d_PA.mif 2
+mrconvert ../mag_20230928 s3_ep2d_D30ms_32dirs.mif 3
+mrconvert ../mag_20230928 s4_ep2d_D13ms_64dirs.mif 4
+mrconvert ../mag_20230928 s5_ep2d_D13ms_32dirs.mif 5
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20231003_process
 cd /autofs/space/linen_001/users/Yixin/mag_20231003_process
-mrconvert ../mag_20231003 s1_ep2d_D30ms_64dirs.mif 17
-mrconvert ../mag_20231003 s2_ep2d_PA.mif 16
-mrconvert ../mag_20231003 s3_ep2d_D30ms_32dirs.mif 15
-mrconvert ../mag_20231003 s4_ep2d_D13ms_64dirs.mif 14
-mrconvert ../mag_20231003 s5_ep2d_D13ms_32dirs.mif 13
+mrconvert ../mag_20231003 mprage.nii.gz 0
+mrconvert ../mag_20231003 s1_ep2d_D30ms_64dirs.mif 1
+mrconvert ../mag_20231003 s2_ep2d_PA.mif 2
+mrconvert ../mag_20231003 s3_ep2d_D30ms_32dirs.mif 3
+mrconvert ../mag_20231003 s4_ep2d_D13ms_64dirs.mif 4
+mrconvert ../mag_20231003 s5_ep2d_D13ms_32dirs.mif 5
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20231004_process
 cd /autofs/space/linen_001/users/Yixin/mag_20231004_process
-mrconvert ../mag_20231004 s1_ep2d_D30ms_64dirs.mif 17
-mrconvert ../mag_20231004 s2_ep2d_PA.mif 16
-mrconvert ../mag_20231004 s3_ep2d_D30ms_32dirs.mif 15
-mrconvert ../mag_20231004 s4_ep2d_D13ms_64dirs.mif 14
-mrconvert ../mag_20231004 s5_ep2d_D13ms_32dirs.mif 13
+mrconvert ../mag_20231004 mprage.nii.gz 5
+mrconvert ../mag_20231004 s1_ep2d_D30ms_64dirs.mif 0
+mrconvert ../mag_20231004 s2_ep2d_PA.mif 1
+mrconvert ../mag_20231004 s3_ep2d_D30ms_32dirs.mif 2
+mrconvert ../mag_20231004 s4_ep2d_D13ms_64dirs.mif 3
+mrconvert ../mag_20231004 s5_ep2d_D13ms_32dirs.mif 4
 
-//Combine all image volumes from scan 20230823
-for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR};do
+//Combine all image volumes
+for exam in mag_20230920;do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 cd ${path}
 mkdir combined
@@ -66,18 +73,17 @@ mkdir combined/p1_nii
 mrcat s1*.mif s2*.mif s3*.mif s4*.mif s5*.mif -axis 3 combined/p1_nii/dwi.mif -force
 done
 
-for exam in {20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 cd ${path}
 mkdir combined
 mkdir combined/p1_nii
-mrconvert s1_ep2d_D30_64dirs.mif -coord 3 end:0 s1_ep2d_D30_64dirs_reversed.mif
 mrcat s2*.mif s3*.mif s1*.mif s4*.mif s5*.mif -axis 3 combined/p1_nii/dwi.mif -force
 done
 
 //Perform gibbs ringing removal
 path=/autofs/space/linen_001/users/Yixin/
-for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 cd ${path}/combined
 mkdir p2_degibbs
@@ -86,7 +92,7 @@ mrconvert p2_degibbs/dwi.mif p2_degibbs/dwi.nii.gz -export_grad_fsl p2_degibbs/b
 done
 
 matlab -nodesktop
-for exam = ["20230915_RR_C1","20230915_RR_C2","20230920_RR","20230922_RR","20230925_RR","20230927_RR","20230928_RR"]
+for exam = ["mag_20230920","mag_20230922","mag_20230925","mag_20230927","mag_20230928","mag_20231003","mag_20231004"]
   cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/combined'])
   files = dir(fullfile('p2_degibbs', 'bvals*')); 
   for i = 1:size(files,1)
@@ -109,7 +115,7 @@ end
 
 //run topup using the averaged b0s from s5 and s6
 path=/autofs/space/linen_001/users/Yixin/
-for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 cd ${path}/${exam}_process/combined
 mkdir p3_topup
 mrconvert p2_degibbs/dwi.mif -coord 3 8:9 p2_degibbs/temp1.mif -force
@@ -119,7 +125,7 @@ mrmath p2_degibbs/temp2.mif mean p2_degibbs/temp2_mean.nii.gz -axis 3 -force
 mrcat p2_degibbs/temp2_mean.nii.gz p2_degibbs/temp1_mean.nii.gz -axis 3 p3_topup/b0s.nii.gz -force
 done
 
-for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/
 cd ${path}/${exam}_process/combined
 topup --imain=p3_topup/b0s.nii.gz \
