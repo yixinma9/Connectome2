@@ -135,16 +135,16 @@ topup --imain=p3_topup/b0s.nii.gz \
 done
 
 //generate mask
-for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/
 cd ${path}/${exam}_process/combined/p3_topup
-#mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3 -force
-#bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
+mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3 -force
+bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
 mrconvert b0s_topup_mean_bet_mask.nii.gz -datatype float64 b0s_topup_mean_bet_mask_float64.nii.gz
 done
 
 //generate idex.txt file for eddy
-for exam = ["20230915_RR_C1","20230915_RR_C2","20230920_RR","20230922_RR","20230925_RR","20230927_RR","20230928_RR"]
+for exam = ["mag_20230920","mag_20230922","mag_20230925","mag_20230927","mag_20230928","mag_20231003","mag_20231004"]
   mkdir(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/combined/p4_eddy'])
   cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/combined/p4_eddy'])
   A = ones(896,1);
@@ -154,7 +154,7 @@ for exam = ["20230915_RR_C1","20230915_RR_C2","20230920_RR","20230922_RR","20230
 end
 
 //run eddy
-for exam in {20230915_RR_C1,20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/
 cd ${path}/${exam}_process/combined/p4_eddy
 /usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 \
