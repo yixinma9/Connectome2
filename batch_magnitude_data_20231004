@@ -171,7 +171,7 @@ done
 //gradient non-linear correction
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/20230915_RR_C1_process/combined';
+root = '/autofs/space/linen_001/users/Yixin/mag_20231004_process/combined';
 rooti = fullfile(root);
 rooto = fullfile(root,['p5_gradnonlin']);
 mkdir(rooto)
@@ -182,34 +182,28 @@ fullfile(rooti,['p4_eddy'],['dwi_eddy.nii.gz']),...
 fullfile(rooto,['dwi_gradnonlin.nii']) ));
 
 // make .mif
-for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
- 
 cd ${path}/${folder}
 mkdir p6_final
-mrconvert p4_eddy/dwi_eddy.nii.gz -fslgrad p4_eddy/dwi_eddy.eddy_rotated_bvecs p2_degibbs/bvals_mod p6_final/dwi.mif
- 
+mrconvert p5_gradnonlin/dwi_gradnonlin.nii.gz -fslgrad p4_eddy/dwi_eddy.eddy_rotated_bvecs p2_degibbs/bvals_mod p6_final/dwi.mif
 cd p6_final
 for b in {50,350,800,1500};do
 dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
 done
-
 for b in {2401,3450,4750,6000};do
 dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D13ms_b${b}.nii.gz -axis 3
 done
-
 for b in {200,950,2300};do
 dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
 done
-
 for b in {4250,6750,9850,13500,17800};do
 dwiextract dwi.mif - -shells ${b} | mrmath - mean mean_D30ms_b${b}.nii.gz -axis 3
 done
-
 done
 
 //noise map estimation
-for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
 cd ${path}
 mkdir p7_noise_10b0s
@@ -219,7 +213,7 @@ mrmath p7_noise_10b0s/dwi_10b0s.mif std p7_noise_10b0s/dwi_10b0s_std.nii.gz -axi
 mrfilter p7_noise_10b0s/dwi_10b0s_std.nii.gz median p7_noise_10b0s/dwi_10b0s_std_median.nii.gz -extent 11 -force
 done
 
-for exam in {20230915_RR_C2,20230920_RR,20230922_RR,20230925_RR,20230927_RR,20230928_RR};do
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
 cd ${path}
 dwiextract p6_final/dwi.mif p7_noise_10b0s/dwi.nii.gz -no_bzero -force
