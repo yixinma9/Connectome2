@@ -3,11 +3,11 @@ for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,ma
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230920_process
 cd /autofs/space/linen_001/users/Yixin/mag_20230920_process
-mrconvert ../mag_20230920 s1_ep2d_PA.mif 26
-mrconvert ../mag_20230920 s2_ep2d_D13ms_32dirs.mif 24
-mrconvert ../mag_20230920 s3_ep2d_D13ms_64dirs.mif 22
-mrconvert ../mag_20230920 s4_ep2d_D30ms_32dirs.mif 20
-mrconvert ../mag_20230920 s5_ep2d_D30ms_64dirs.mif 18
+mrconvert ../mag_20230920 s1_ep2d_PA.mif 21
+mrconvert ../mag_20230920 s2_ep2d_D13ms_32dirs.mif 
+mrconvert ../mag_20230920 s3_ep2d_D13ms_64dirs.mif 
+mrconvert ../mag_20230920 s4_ep2d_D30ms_32dirs.mif 
+mrconvert ../mag_20230920 s5_ep2d_D30ms_64dirs.mif 
 
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230922_process
 cd /autofs/space/linen_001/users/Yixin/mag_20230922_process
