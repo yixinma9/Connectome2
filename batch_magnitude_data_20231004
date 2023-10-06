@@ -171,7 +171,7 @@ done
 //gradient non-linear correction
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/mag_20231004_process/combined';
+root = '/autofs/space/linen_001/users/Yixin/mag_20231003_process/combined';
 rooti = fullfile(root);
 rooto = fullfile(root,['p5_gradnonlin']);
 mkdir(rooto)
