@@ -220,6 +220,9 @@ dwiextract p6_final/dwi.mif p7_noise_10b0s/dwi.nii.gz -no_bzero -force
 dwiextract p6_final/dwi.mif p7_noise_10b0s/dwi_b0s.nii.gz -bzero -force
 done
 
+/usr/pubsw/packages/ANTS/2.4.4/bin/N4BiasFieldCorrection -d 3 -v 1 -s 4 -b [ 180 ] -c [ 50x50x50x50, 0.0 ] \
+  -i mprage.nii.gz -o [ corrected_mprage.nii.gz, mprage_BiasField.nii.gz ]
+
 
 
 
