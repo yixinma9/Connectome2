@@ -12,28 +12,172 @@ cd ${path}
 
 mkdir b1500
 mkdir b1500/p1_nii
-#mrcat s2*.mif s1*reverse.mif -axis 3 b1500/p1_nii/dwi.mif -force
-#dwiextract b1500/p1_nii/dwi.mif b1500/p1_nii/dwi_only.mif -no_bzero 
+mrcat s2*.mif s1*reverse.mif -axis 3 b1500/p1_nii/dwi.mif -force
+dwiextract b1500/p1_nii/dwi.mif b1500/p1_nii/dwi_only.mif -no_bzero 
 dwiextract b1500/p1_nii/dwi.mif b1500/p1_nii/dwi_b0s.mif -bzero 
 
 mkdir b800
 mkdir b800/p1_nii
 mrcat s2*.mif s3*.mif -axis 3 b800/p1_nii/dwi.mif -force
-#dwiextract b800/p1_nii/dwi.mif b800/p1_nii/dwi_only.mif -no_bzero 
+dwiextract b800/p1_nii/dwi.mif b800/p1_nii/dwi_only.mif -no_bzero 
 dwiextract b800/p1_nii/dwi.mif b800/p1_nii/dwi_b0s.mif -bzero 
 
-cd /autofs/space/linen_001/users/Yixin/lib
-exam=mag_20231006_hires
-path=/autofs/space/linen_001/users/Yixin/${exam}_process
-mkdir ${path}/b1500/q2_denoise/
-sh rician_correct_mppca.sh -i ${path}/b1500/p1_nii/dwi_only.mif -o ${path}/b1500/q2_denoise/dwi_only.mif -n 3
-
-cd /autofs/space/linen_001/users/Yixin/lib
-exam=mag_20231006_hires
-path=/autofs/space/linen_001/users/Yixin/${exam}_process
-mkdir ${path}/b800/q2_denoise/
-sh rician_correct_mppca.sh -i ${path}/b800/p1_nii/dwi_only.mif -o ${path}/b800/q2_denoise/dwi_only.mif -n 3
+//run denoise on dwi_only images
 
 for b in {1500,800};do
-
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+mkdir ${path}/b${b}/q2_denoise/
+cd /autofs/space/linen_001/users/Yixin/lib
+sh rician_correct_mppca.sh -i ${path}/b${b}/p1_nii/dwi_only.mif -o ${path}/b${b}/q2_denoise/dwi_only.mif -n 3
 done
+
+//run mrdegibbs on dwi_b0.mif
+for b in {1500,800};do
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+mkdir ${path}/b${b}/p2_degibbs/
+mrdegibbs b${b}/p1_nii/dwi_b0s.mif b${b}/p2_degibbs/dwi_b0s.mif
+done
+
+//export bvecs and bvals
+for b in {1500,800};do
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+mrconvert b${b}/p1_nii/dwi.mif b${b}/p1_nii/dwi.nii.gz -export_grad_fsl b${b}/p1_nii/bvecs b${b}/p1_nii/bvals
+rm b${b}/p1_nii/dwi.nii.gz
+done
+
+//put together DWIs
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+for b in {800,1500};do
+
+cd ${path}/b${b}/p2_degibbs
+mkdir subfolder
+mrconvert dwi_b0s.mif --coord 3 0:3 subfolder/dwi_b0_reverse_polarity.mif -force
+for i in {4,5,6,7,8};do
+mrconvert dwi_b0s.mif -coord 3 ${i} subfolder/dwi_b0_${i}.mif -force
+done
+
+cd ${path}/b${b}/q2_denoise
+mkdir subfolder
+mrconvert dwi_only.mif --coord 3 0:15 subfolder/dwi_only_1.mif -force
+mrconvert dwi_only.mif --coord 3 16:31 subfolder/dwi_only_2.mif -force
+mrconvert dwi_only.mif --coord 3 32:47 subfolder/dwi_only_3.mif -force
+mrconvert dwi_only.mif --coord 3 48:63 subfolder/dwi_only_4.mif -force
+
+cd ${path}/b${b}/p1_nii
+mkdir subfolder
+mrconvert dwi_only.mif --coord 3 0:15 subfolder/dwi_only_1.mif -force
+mrconvert dwi_only.mif --coord 3 16:31 subfolder/dwi_only_2.mif -force
+mrconvert dwi_only.mif --coord 3 32:47 subfolder/dwi_only_3.mif -force
+mrconvert dwi_only.mif --coord 3 48:63 subfolder/dwi_only_4.mif -force
+
+//concatenate all b0s and dwis together for b1500
+b=1500
+cd ${path}/b${b}
+mkdir p3_concat
+mrcat p2_degibbs/subfolder/dwi_b0_reverse_polarity.mif p1_nii/subfolder/dwi_only_1.mif \
+p2_degibbs/subfolder/dwi_b0_4.mif p1_nii/subfolder/dwi_only_2.mif \
+p2_degibbs/subfolder/dwi_b0_5.mif p1_nii/subfolder/dwi_only_3.mif \
+p2_degibbs/subfolder/dwi_b0_6.mif p1_nii/subfolder/dwi_only_4.mif \
+p2_degibbs/subfolder/dwi_b0_7.mif p2_degibbs/subfolder/dwi_b0_8.mif \
+p3_concat/dwi.mif
+
+cd ${path}/b${b}
+mkdir q3_concat
+mrcat p2_degibbs/subfolder/dwi_b0_reverse_polarity.mif q2_denoise/subfolder/dwi_only_1.mif \
+p2_degibbs/subfolder/dwi_b0_4.mif q2_denoise/subfolder/dwi_only_2.mif \
+p2_degibbs/subfolder/dwi_b0_5.mif q2_denoise/subfolder/dwi_only_3.mif \
+p2_degibbs/subfolder/dwi_b0_6.mif q2_denoise/subfolder/dwi_only_4.mif \
+p2_degibbs/subfolder/dwi_b0_7.mif p2_degibbs/subfolder/dwi_b0_8.mif \
+q3_concat/dwi.mif
+done
+
+//concatenate all b0s and dwis together for b800
+b=800
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}/b${b}
+mkdir p3_concat
+mrcat p2_degibbs/subfolder/dwi_b0_reverse_polarity.mif p2_degibbs/subfolder/dwi_b0_4.mif \
+p1_nii/subfolder/dwi_only_1.mif p2_degibbs/subfolder/dwi_b0_5.mif \
+p1_nii/subfolder/dwi_only_2.mif p2_degibbs/subfolder/dwi_b0_6.mif \
+p1_nii/subfolder/dwi_only_3.mif p2_degibbs/subfolder/dwi_b0_7.mif \
+p1_nii/subfolder/dwi_only_4.mif p2_degibbs/subfolder/dwi_b0_8.mif \
+p3_concat/dwi.mif -force
+
+cd ${path}/b${b}
+mkdir q3_concat
+mrcat p2_degibbs/subfolder/dwi_b0_reverse_polarity.mif p2_degibbs/subfolder/dwi_b0_4.mif \
+q2_denoise/subfolder/dwi_only_1.mif p2_degibbs/subfolder/dwi_b0_5.mif \
+q2_denoise/subfolder/dwi_only_2.mif p2_degibbs/subfolder/dwi_b0_6.mif \
+q2_denoise/subfolder/dwi_only_3.mif p2_degibbs/subfolder/dwi_b0_7.mif \
+q2_denoise/subfolder/dwi_only_4.mif p2_degibbs/subfolder/dwi_b0_8.mif \
+q3_concat/dwi.mif -force
+
+
+//Prepare for TopUp
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+for b in {800,1500};do
+cd ${path}/b${b}
+mkdir p4_topup
+mrconvert p2_degibbs/dwi_b0s.mif -coord 3 0:2 p2_degibbs/temp1.mif -force
+mrconvert p2_degibbs/dwi_b0s.mif -coord 3 3:8 p2_degibbs/temp2.mif -force
+mrmath p2_degibbs/temp1.mif mean p2_degibbs/temp1_mean.nii.gz -axis 3 -force
+mrmath p2_degibbs/temp2.mif mean p2_degibbs/temp2_mean.nii.gz -axis 3 -force
+mrcat p2_degibbs/temp2_mean.nii.gz p2_degibbs/temp1_mean.nii.gz -axis 3 p4_topup/b0s.nii.gz -force
+done
+
+//run TopUp
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+#for b in {800,1500};do
+b=800
+cd ${path}/b${b}
+topup --imain=p4_topup/b0s.nii.gz \
+--datain=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--config=/autofs/space/linen_001/users/Yixin/setup/b02b0_yixin_421.cnf \
+--out=p4_topup/b0s_topup --iout=p4_topup/b0s_topup
+done
+
+//generate mask from TopUp result
+exam=mag_20231006_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+for b in {800,1500};do
+cd ${path}/b${b}/p4_topup
+mrmath b0s_topup.nii.gz mean b0s_topup_mean.nii.gz -axis 3 -force
+bet b0s_topup_mean.nii.gz b0s_topup_mean_bet -m
+mrconvert b0s_topup_mean_bet_mask.nii.gz -datatype float64 b0s_topup_mean_bet_mask_float64.nii.gz
+mri_synthseg --i b0s_topup_mean.nii.gz --o b0s_topup_mean_synthseg.nii.gz
+mrcalc b0s_topup_mean_synthseg.nii.gz 2 -eq b0s_topup_mean_synthseg.nii.gz 41 -eq -add wm_temp.nii.gz
+mrgrid wm_temp.nii.gz regrid -template b0s_topup_mean.nii.gz wm.nii.gz
+rm wm_temp.nii.gz
+done
+
+//generate index file
+matlab -nodesktop
+for b = ["800","1500"]
+mkdir(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/b' char(bvalue) '/p5_eddy'])
+cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/b' char(bvalue) '/p5_eddy'])
+A = ones(72,1);
+A([1:10]) = 2;
+fileID = fopen('index.txt','w');
+nbytes = fprintf(fileID,'%5d',A);
+
+
+//run Eddy
+
+
+
+//run gradnonlin
+
+
+
+
+
+
+
+
