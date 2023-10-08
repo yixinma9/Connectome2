@@ -83,6 +83,7 @@ done
 
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}/combined
 for b in {50,350,800,1500,2401,3450,4750,6000};do
 dwiextract p1_nii/dwi.mif -fslgrad p2_degibbs/bvecs p2_degibbs/bvals_mod -shells ${b} p1_nii/dwi_D13ms_b${b}.mif -force
 done
