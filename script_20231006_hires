@@ -10,24 +10,26 @@ exam=mag_20231006_hires
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 cd ${path}
 
-mrcat s1*reverse.mif s2*.mif s3*.mif -axis 3 dwi_s123.mif -force
-
 mkdir b1500
 mkdir b1500/p1_nii
 mrcat s2*.mif s1*reverse.mif -axis 3 b1500/p1_nii/dwi.mif -force
+dwiextract b1500/p1_nii/dwi.mif b1500/p1_nii/dwi_only.mif -no_bzero 
 
 mkdir b800
 mkdir b800/p1_nii
 mrcat s2*.mif s3*.mif -axis 3 b800/p1_nii/dwi.mif -force
+dwiextract b800/p1_nii/dwi.mif b800/p1_nii/dwi_only.mif -no_bzero 
 
 cd /autofs/space/linen_001/users/Yixin/lib
 exam=mag_20231006_hires
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 mkdir ${path}/b1500/q2_denoise/
-sh rician_correct_mppca.sh -i ${path}/b1500/p1_nii/dwi.mif -o ${path}/b1500/q2_denoise/dwi.mif -n 3
+sh rician_correct_mppca.sh -i ${path}/b1500/p1_nii/dwi_only.mif -o ${path}/b1500/q2_denoise/dwi_only.mif -n 3
 
 cd /autofs/space/linen_001/users/Yixin/lib
 exam=mag_20231006_hires
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
-sh rician_correct_mppca.sh -i ${path}/dwi_s123.mif -o ${path}/dwi_s123_denoised.mif -n 3
+mkdir ${path}/b800/q2_denoise/
+sh rician_correct_mppca.sh -i ${path}/b800/p1_nii/dwi_only.mif -o ${path}/b800/q2_denoise/dwi_only.mif -n 3
+
 
