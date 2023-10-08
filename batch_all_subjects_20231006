@@ -81,10 +81,25 @@ mkdir combined/p1_nii
 mrcat s2*.mif s3*.mif s1*.mif s4*.mif s5*.mif -axis 3 combined/p1_nii/dwi.mif -force
 done
 
-cd /autofs/space/linen_001/users/Yixin/lib
-for exam in {mag_20230823,mag_20230920,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
-sh rician_correct_mppca.sh -i ${path}/combined/p1_nii/dwi.mif -o ${path}/combined/q2_denoise/dwi.mif -n 3
+for b in {50,350,800,1500,2401,3450,4750,6000};do
+dwiextract p1_nii/dwi.mif -fslgrad p2_degibbs/bvecs p2_degibbs/bvals_mod -shells ${b} p1_nii/dwi_D13ms_b${b}.mif -force
+done
+for b in {200,950,2300,4250,6750,9850,13500,17800};do
+dwiextract p1_nii/dwi.mif -fslgrad p2_degibbs/bvecs p2_degibbs/bvals_mod -shells ${b} p1_nii/dwi_D30ms_b${b}.mif -force
+done
+done
+
+cd /autofs/space/linen_001/users/Yixin/lib
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+for b in {50,350,800,1500,2401,3450,4750,6000};do
+sh rician_correct_mppca.sh -i ${path}/combined/p1_nii/dwi_D13ms_b${b}.mif -o ${path}/combined/q2_denoise/dwi_D13ms_b${b}.mif -n 3
+done
+for b in {200,950,2300,4250,6750,9850,13500,17800};do
+sh rician_correct_mppca.sh -i ${path}/combined/p1_nii/dwi_D30ms_b${b}.mif -o ${path}/combined/q2_denoise/dwi_D30ms_b${b}.mif -n 3
+done
 done
 
 //Perform gibbs ringing removal
