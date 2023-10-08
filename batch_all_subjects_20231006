@@ -135,7 +135,9 @@ path=/autofs/space/linen_001/users/Yixin/
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 cd ${path}/${exam}_process/combined/p3_topup
 #mri_synthseg --i b0s_topup_mean.nii.gz --o b0s_topup_mean_synthseg.nii.gz
-mrcalc b0s_topup_mean_synthseg.nii.gz 2 -eq b0s_topup_mean_synthseg.nii.gz 41 -eq -add wm.nii.gz
+mrcalc b0s_topup_mean_synthseg.nii.gz 2 -eq b0s_topup_mean_synthseg.nii.gz 41 -eq -add wm_temp.nii.gz
+mrgrid wm_temp.nii.gz regrid -template b0s_topup_mean.nii.gz wm.nii.gz
+rm wm_temp.nii.gz
 done
 
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
@@ -247,6 +249,7 @@ mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}
 
 mkdir p7_noise_10b0s_average
 mrcalc p7_noise_10b0s_1/snr.nii.gz p7_noise_10b0s_2/snr.nii.gz -add p7_noise_10b0s_3/snr.nii.gz -add 3 -divide p7_noise_10b0s_average/snr.nii.gz
+mrcalc p7_noise_10b0s_1/dwi_10b0s_std_median.nii.gz p7_noise_10b0s_2/dwi_10b0s_std_median.nii.gz -add p7_noise_10b0s_3/dwi_10b0s_std_median.nii.gz -add 3 -divide p7_noise_10b0s_average/dwi_10b0s_std_median.nii.gz
 
 done
 
@@ -281,14 +284,15 @@ mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}
 
 mkdir p7_noise_10b0s_average
 mrcalc p7_noise_10b0s_1/snr.nii.gz p7_noise_10b0s_2/snr.nii.gz -add p7_noise_10b0s_3/snr.nii.gz -add 3 -divide p7_noise_10b0s_average/snr.nii.gz
+mrcalc p7_noise_10b0s_1/dwi_10b0s_std_median.nii.gz p7_noise_10b0s_2/dwi_10b0s_std_median.nii.gz -add p7_noise_10b0s_3/dwi_10b0s_std_median.nii.gz -add 3 -divide p7_noise_10b0s_average/dwi_10b0s_std_median.nii.gz
 done
 
 
-for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
 cd ${path}
-dwiextract p6_final/dwi.mif p7_noise_10b0s/dwi.nii.gz -no_bzero -force
-dwiextract p6_final/dwi.mif p7_noise_10b0s/dwi_b0s.nii.gz -bzero -force
+dwiextract p6_final/dwi.mif p7_noise_10b0s_average/dwi.nii.gz -no_bzero -force
+dwiextract p6_final/dwi.mif p7_noise_10b0s_average/dwi_b0s.nii.gz -bzero -force
 done
 
 /usr/pubsw/packages/ANTS/2.4.4/bin/N4BiasFieldCorrection -d 3 -v 1 -s 4 -b [ 180 ] -c [ 50x50x50x50, 0.0 ] \
