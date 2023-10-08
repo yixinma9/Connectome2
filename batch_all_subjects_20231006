@@ -134,7 +134,8 @@ done
 path=/autofs/space/linen_001/users/Yixin/
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 cd ${path}/${exam}_process/combined/p3_topup
-mri_synthseg --i b0s_topup_mean.nii.gz --o b0s_topup_mean_synthseg.nii.gz
+#mri_synthseg --i b0s_topup_mean.nii.gz --o b0s_topup_mean_synthseg.nii.gz
+mrcalc b0s_topup_mean_synthseg.nii.gz 2 -eq b0s_topup_mean_synthseg.nii.gz 41 -eq -add wm.nii.gz
 done
 
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
@@ -183,7 +184,7 @@ done
 //gradient non-linear correction
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/mag_20231003_process/combined';
+root = '/autofs/space/linen_001/users/Yixin/mag_20230823_process/combined';
 rooti = fullfile(root);
 rooto = fullfile(root,['p5_gradnonlin']);
 mkdir(rooto)
@@ -194,7 +195,7 @@ fullfile(rooti,['p4_eddy'],['dwi_eddy.nii.gz']),...
 fullfile(rooto,['dwi_gradnonlin.nii']) ));
 
 // make .mif
-for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
 cd ${path}/${folder}
 mkdir p6_final
@@ -215,15 +216,73 @@ done
 done
 
 //noise map estimation
-for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+for exam in {mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
-cd ${path}
-mkdir p7_noise_10b0s
-mrconvert p6_final/dwi.mif -coord 3 0:9 p7_noise_10b0s/dwi_10b0s.mif -force
 mrconvert p6_final/dwi.mif p6_final/dwi.nii.gz -export_grad_fsl p6_final/bvecs p6_final/bvals
-mrmath p7_noise_10b0s/dwi_10b0s.mif std p7_noise_10b0s/dwi_10b0s_std.nii.gz -axis 3 -force
-mrfilter p7_noise_10b0s/dwi_10b0s_std.nii.gz median p7_noise_10b0s/dwi_10b0s_std_median.nii.gz -extent 11 -force
+rm -r p7_noise_10b0s
+cd ${path}
+session=1
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 0:9 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+session=2
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 115:124 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+session=3
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 886:895 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+mkdir p7_noise_10b0s_average
+mrcalc p7_noise_10b0s_1/snr.nii.gz p7_noise_10b0s_2/snr.nii.gz -add p7_noise_10b0s_3/snr.nii.gz -add 3 -divide p7_noise_10b0s_average/snr.nii.gz
+
 done
+
+for exam in {mag_20230920,mag_20230823};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
+mrconvert p6_final/dwi.mif p6_final/dwi.nii.gz -export_grad_fsl p6_final/bvecs p6_final/bvals
+rm -r p7_noise_10b0s
+cd ${path}
+session=1
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 0:9 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+session=2
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 541:550 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+session=3
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 150:159 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.mif mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+mkdir p7_noise_10b0s_average
+mrcalc p7_noise_10b0s_1/snr.nii.gz p7_noise_10b0s_2/snr.nii.gz -add p7_noise_10b0s_3/snr.nii.gz -add 3 -divide p7_noise_10b0s_average/snr.nii.gz
+done
+
 
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
