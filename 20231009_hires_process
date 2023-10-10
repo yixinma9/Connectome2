@@ -10,6 +10,9 @@ exam=mag_20231006_hires
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 cd ${path}
 
+/usr/pubsw/packages/ANTS/2.4.4/bin/N4BiasFieldCorrection -d 4 -v 1 -s 4 -b [ 180 ] -c [ 50x50x50x50, 0.0 ] \
+  -i dwi.nii.gz -o [ dwi_N4.nii.gz, dwi_biasfield.nii.gz ]
+
 mkdir b1500
 mkdir b1500/p1_nii
 mrcat s2*.mif s1*reverse.mif -axis 3 b1500/p1_nii/dwi.mif -force
