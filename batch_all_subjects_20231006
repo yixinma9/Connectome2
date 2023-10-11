@@ -90,8 +90,9 @@ done
 for b in {200,950,2300,4250,6750,9850,13500,17800};do
 dwiextract p1_nii/dwi.mif -fslgrad p2_degibbs/bvecs p2_degibbs/bvals_mod -shells ${b} p1_nii/dwi_D30ms_b${b}.mif -force
 done
+dwiextract p1_nii/dwi.mif -bzero q2_denoise/dwi_b0.mif -force
 done
-
+ 
 cd /autofs/space/linen_001/users/Yixin/lib
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
@@ -101,6 +102,12 @@ done
 for b in {200,950,2300,4250,6750,9850,13500,17800};do
 sh rician_correct_mppca.sh -i ${path}/combined/p1_nii/dwi_D30ms_b${b}.mif -o ${path}/combined/q2_denoise/dwi_D30ms_b${b}.mif -n 3
 done
+done
+
+cd /autofs/space/linen_001/users/Yixin/lib
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined/q2_denoise/
+sh concatenate_dwis.sh ${path}
 done
 
 //Perform gibbs ringing removal
