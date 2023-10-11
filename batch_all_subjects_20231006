@@ -106,6 +106,8 @@ done
 
 cd /autofs/space/linen_001/users/Yixin/lib
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+cd /autofs/space/linen_001/users/Yixin/lib
+exam=mag_20231004
 path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined/q2_denoise/
 sh concatenate_dwis.sh ${path}
 done
