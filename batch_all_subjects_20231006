@@ -1,3 +1,23 @@
+//gradient non-linear correction for mprage
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/mag_20230928_process';
+rooti = fullfile(root);
+rooto = fullfile(root,['mprage_gradnonlin']);
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['mprage.nii.gz']),...
+fullfile(rooto,['mprage_gradnonlin.nii.gz']) ));
+
+
+for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprage_gradnonlin.nii.gz
+recon-all -subjid fs -i ${data} -all -hires
+done
+
 cd /autofs/space/linen_001/users/Yixin/
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 
@@ -95,6 +115,7 @@ done
  
 cd /autofs/space/linen_001/users/Yixin/lib
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+cd /autofs/space/linen_001/users/Yixin/lib
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 for b in {50,350,800,1500,2401,3450,4750,6000};do
 sh rician_correct_mppca.sh -i ${path}/combined/p1_nii/dwi_D13ms_b${b}.mif -o ${path}/combined/q2_denoise/dwi_D13ms_b${b}.mif -n 3
@@ -117,13 +138,12 @@ path=/autofs/space/linen_001/users/Yixin/
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 cd ${path}/combined
-mkdir p2_degibbs
-mrdegibbs p1_nii/dwi.mif p2_degibbs/dwi.mif
-mrconvert p2_degibbs/dwi.mif p2_degibbs/dwi.nii.gz -export_grad_fsl p2_degibbs/bvecs p2_degibbs/bvals -force
+mkdir q4_degibbs
+mrdegibbs q3_concat/dwi.nii.gz q4_degibbs/dwi.nii.gz
 done
 
 matlab -nodesktop
-for exam = ["mag_20230920","mag_20230922","mag_20230925","mag_20230927","mag_20230928","mag_20231003","mag_20231004"]
+for exam = ["mag_20230823","mag_20230920","mag_20230922","mag_20230925","mag_20230927","mag_20230928","mag_20231003","mag_20231004"]
   cd(['/autofs/space/linen_001/users/Yixin/' char(exam) '_process/combined'])
   files = dir(fullfile('p2_degibbs', 'bvals*')); 
   for i = 1:size(files,1)
@@ -148,12 +168,12 @@ end
 path=/autofs/space/linen_001/users/Yixin/
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 cd ${path}/${exam}_process/combined
-mkdir p3_topup
-mrconvert p2_degibbs/dwi.mif -coord 3 8:9 p2_degibbs/temp1.mif -force
-mrconvert p2_degibbs/dwi.mif -coord 3 10:11 p2_degibbs/temp2.mif -force
-mrmath p2_degibbs/temp1.mif mean p2_degibbs/temp1_mean.nii.gz -axis 3 -force
-mrmath p2_degibbs/temp2.mif mean p2_degibbs/temp2_mean.nii.gz -axis 3 -force
-mrcat p2_degibbs/temp2_mean.nii.gz p2_degibbs/temp1_mean.nii.gz -axis 3 p3_topup/b0s.nii.gz -force
+mkdir q5_topup
+mrconvert q4_degibbs/dwi.mif -coord 3 8:9 q4_degibbs/temp1.mif -force
+mrconvert q4_degibbs/dwi.mif -coord 3 10:11 q4_degibbs/temp2.mif -force
+mrmath q4_degibbs/temp1.mif mean q4_degibbs/temp1_mean.nii.gz -axis 3 -force
+mrmath q4_degibbs/temp2.mif mean q4_degibbs/temp2_mean.nii.gz -axis 3 -force
+mrcat q4_degibbs/temp2_mean.nii.gz q4_degibbs/temp1_mean.nii.gz -axis 3 q5_topup/b0s.nii.gz -force
 done
 
 path=/autofs/space/linen_001/users/Yixin/
@@ -220,6 +240,7 @@ system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
 roothcp,...
 fullfile(rooti,['p4_eddy'],['dwi_eddy.nii.gz']),...
 fullfile(rooto,['dwi_gradnonlin.nii']) ));
+
 
 // make .mif
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
