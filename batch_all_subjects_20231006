@@ -15,7 +15,7 @@ fullfile(rooto,['mprage_gradnonlin.nii.gz']) ));
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
 data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprage_gradnonlin.nii.gz
-recon-all -subjid fs -i ${data} -all -hires
+recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
 done
 
 //read-in the data
