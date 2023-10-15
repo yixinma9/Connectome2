@@ -16,9 +16,15 @@ C1_output=/autofs/space/linen_001/users/Yixin/mag_20230925_process/combined/c1/$
 -o ${C1_output}  
 done
 
-antsApplyTransforms \
-  -d 3 \
-  -i movingImage.nii.gz \
-  -r fixedImage.nii.gz \
-  -t movingToFixed_0GenericAffine.mat \
-  -o movingToFixedDeformed.nii.gz
+// transform all subjects to the MNI space
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}
+bbregister --s fs --mov combined/p6_final/mean_D13ms_b800.nii.gz --init-fsl --reg register.dat --dti
+mkdir smt_axcaliber_SS0_mcmc_snr_voxel_20_p_0r5_in_tal/
+for name in {r,DeR,f,fCSF};do
+mri_vol2vol --mov combined/smt_axcaliber_SS0_mcmc_snr_voxel_20_p_0r5/${name}.nii --reg register.dat \
+--o combined/smt_axcaliber_SS0_mcmc_snr_voxel_20_p_0r5_in_tal/${name}-in-tal.1mm.nii --tal --talres 1
+done
+done
