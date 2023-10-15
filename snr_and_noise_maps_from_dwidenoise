@@ -1,0 +1,41 @@
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined/p1_nii
+cd ${path}
+dwiextract dwi.mif -bzero dwi_b0.mif -force
+dwidenoise dwi_b0.mif dwi_b0_denoised.mif -noise noise_map.nii.gz -force
+mrmath dwi_b0.mif mean dwi_b0_mean.nii.gz -axis 3 -force
+mrcalc dwi_b0_mean.nii.gz noise_map.nii.gz -divide snr.nii.gz -force
+done
+
+for exam in {Tract_HC_078,Tract_HC_084};do
+path=/autofs/space/rhapsody_001/users/le/AxCaliber/${exam}/magnitude
+cd ${path}
+dwidenoise dwi_b0s.nii.gz dwi_b0s_denoised.mif -noise noise_map.nii.gz -force
+mrmath dwi_b0s.nii.gz mean dwi_b0_mean.nii.gz -axis 3 -force
+mrcalc dwi_b0_mean.nii.gz noise_map.nii.gz -divide snr.nii.gz -force
+done
+
+matlab -nodesktop
+//gradient non-linear correction
+clear
+addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
+root = '/autofs/space/linen_001/users/Yixin/mag_20231004_process/combined/p1_nii';
+rooti = fullfile(root);
+rooto = fullfile(root,['snr_gradnonlin']);
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['snr.nii.gz']),...
+fullfile(rooto,['snr_gadnonlin.nii']) ));
+
+rooti = fullfile(root);
+rooto = fullfile(root,['noise_map_gradnonlin']);
+mkdir(rooto)
+roothcp = '/space/scheherazade/2/users/qfan/tools/preproc/hcps_diff_prep_v2'; % gradient nonlinearity correction on degibbsed images
+system(sprintf('%s/hcps_gnc_c2.sh -i %s -o %s -interp spline',...
+roothcp,...
+fullfile(rooti,['noise_map.nii.gz']),...
+fullfile(rooto,['noise_map_gadnonlin.nii']) ));
+
+
