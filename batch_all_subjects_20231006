@@ -234,7 +234,7 @@ cd ${path}/${exam}_process/combined/p4_eddy
 done
 
 test eddy on one subject:
-exam=mag_20230925
+exam=mag_20231004
 path=/autofs/space/linen_001/users/Yixin/
 cd ${path}/${exam}_process/combined/p4_eddy
 /usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 \
