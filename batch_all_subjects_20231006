@@ -99,6 +99,14 @@ mkdir combined/p1_nii
 mrcat s2*.mif s3*.mif s1*.mif s4*.mif s5*.mif -axis 3 combined/p1_nii/dwi.mif -force
 done
 
+cd /autofs/space/linen_001/users/Yixin/lib
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+cd /autofs/space/linen_001/users/Yixin/lib
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
+sh rician_correct_mppca.sh -i ${path}/p1_nii/dwi.mif -o ${path}/q2_denoise/dwi.mif -n 3
+done
+
+
 for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 path=/autofs/space/linen_001/users/Yixin/${exam}_process
 cd ${path}/combined
