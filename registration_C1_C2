@@ -39,6 +39,26 @@ C1_output=/autofs/space/linen_001/users/Yixin/${C2_name}_process/combined/c1/${m
 -o ${C1_output}  
 done
 
+C2_name=20230915_RR_C2
+C1_name=20230915_RR_C1
+C2=/autofs/space/linen_001/users/Yixin/${C2_name}_process/combined/p6_final/mean_D13ms_b50.nii.gz
+C1=/autofs/space/linen_001/users/Yixin/${C1_name}_process/combined/p6_final/mean_D13ms_b50.nii.gz
+
+cd /autofs/space/linen_001/users/Yixin/${C1_name}_process/combined
+/usr/pubsw/packages/ANTS/2.4.4/bin/antsRegistrationSyNQuick.sh -d 3 -t a -f ${C2} \
+-m ${C1} -o Ants_C1_to_C2_ -n 8
+
+for metric in {DeR,f,fcsf,r};do
+C1=/autofs/space/linen_001/users/Yixin/${C1_name}_process/combined/smt_axcaliber_SS0_mcmc/${metric}.nii
+C1_output=/autofs/space/linen_001/users/Yixin/${C2_name}_process/combined/smt_axcaliber_SS0_mcmc/${metric}_C1_2_C2.nii
+/usr/pubsw/packages/ANTS/2.4.4/bin/antsApplyTransforms \
+-d 3 \
+-i ${C1} \
+-r ${C2} \
+-t Ants_C1_to_C2_0GenericAffine.mat \
+-o ${C1_output}  
+done
+
 
 
 // transform all subjects to the MNI space
