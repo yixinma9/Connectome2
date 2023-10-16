@@ -53,3 +53,16 @@ mri_vol2vol --mov combined/smt_axcaliber_SS0_mcmc_snr_voxel_20_p_0r5/${name}.nii
 --o combined/smt_axcaliber_SS0_mcmc_snr_voxel_20_p_0r5_in_tal/${name}-in-tal.1mm.nii --tal --talres 1
 done
 done
+
+// transform all subjects to the MNI space
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}
+bbregister --s fs --mov combined/p3_topup/b0s_topup_mean.nii.gz --init-fsl --reg register.dat --dti
+mkdir smt_axcaliber_SS0_mcmc_snr_voxel_p_0r5_in_tal/
+for name in {r,DeR,f,fCSF};do
+mri_vol2vol --mov combined/smt_axcaliber_SS0_mcmc_snr_voxel_p_0r5/${name}.nii --reg register.dat \
+--o combined/smt_axcaliber_SS0_mcmc_snr_voxel_p_0r5_in_tal/${name}-in-tal.1mm.nii --tal --talres 1
+done
+done
