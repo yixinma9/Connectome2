@@ -1,7 +1,7 @@
 //gradient non-linear correction for mprage
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/mag_20231004_process';
+root = '/autofs/space/linen_001/users/Yixin/mag_20230823_process';
 rooti = fullfile(root);
 rooto = fullfile(root,['mprage_gradnonlin']);
 mkdir(rooto)
