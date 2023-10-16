@@ -249,6 +249,21 @@ cd ${path}/${exam}_process/combined/p4_eddy
 --estimate_move_by_susceptibility \
 --mporder=16 --s2v_niter=5 --s2v_lambda=1
 
+exam=mag_20231004
+path=/autofs/space/linen_001/users/Yixin/
+cd ${path}/${exam}_process/combined/p4_eddy
+/usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 \
+--imain=../p2_degibbs/dwi.nii.gz \
+--mask=../p3_topup/b0s_topup_mean_bet_mask.nii.gz \
+--acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--index=index.txt \
+--bvecs=../p2_degibbs/bvecs --bvals=../p2_degibbs/bvals_mod --topup=../p3_topup/b0s_topup \
+--flm=cubic --interp=spline --niter=8 --data_is_shelled --verbose \
+--out=../p4_eddy/dwi_eddy \
+--ol_pos --ol_nstd=4 \
+--estimate_move_by_susceptibility \
+--mporder=16 --s2v_niter=5 --s2v_lambda=1
+
 
 //gradient non-linear correction
 clear
