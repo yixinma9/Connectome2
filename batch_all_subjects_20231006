@@ -16,7 +16,7 @@ fullfile(rooto,['mprage_gradnonlin.nii.gz']) ));
   -i mprage_gradnonlin.nii.gz -o [ mprage_gradnonlin_N4.nii.gz, BiasField.nii.gz ]
 
 //run freesurfer reconstruction
-for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
+for exam in {mag_20230920,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
 data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprage_gradnonlin_N4.nii.gz
 recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
@@ -153,6 +153,13 @@ done
 for b in {200,950,2300,4250,6750,9850,13500,17800};do
 sh rician_correct_mppca.sh -i ${path}/combined/p1_nii/dwi_D30ms_b${b}.mif -o ${path}/combined/q2_denoise/dwi_D30ms_b${b}.mif -n 3
 done
+done
+
+//running on linen
+cd /autofs/space/linen_001/users/Yixin/lib
+for exam in {mag_20231003,mag_20230928,mag_20230927,mag_20230925};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+sh rician_correct_mppca.sh -i ${path}/combined/p1_nii/dwi.mif -o ${path}/combined/q2_denoise/dwi.mif -n 3
 done
 
 cd /autofs/space/linen_001/users/Yixin/lib
