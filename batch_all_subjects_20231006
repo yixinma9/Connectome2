@@ -1,7 +1,7 @@
 //gradient non-linear correction for mprage
 clear
 addpath(genpath('/autofs/space/allegro_002/users/hlee/library'));
-root = '/autofs/space/linen_001/users/Yixin/mag_20230823_process';
+root = '/autofs/space/linen_001/users/Yixin/mag_20230928_process';
 rooti = fullfile(root);
 rooto = fullfile(root,['mprage_gradnonlin']);
 mkdir(rooto)
@@ -22,6 +22,25 @@ data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprag
 recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
 done
 
+exam=mag_20230823
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage.nii.gz
+recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
+
+exam=mag_20231003
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprage_gradnonlin.nii.gz
+recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
+
+exam=mag_20230928
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprage_gradnonlin.nii.gz
+recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
+
+exam=mag_20230927
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage.nii.gz
+recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
 
 //read-in the data
 mkdir /autofs/space/linen_001/users/Yixin/mag_20230920_process
