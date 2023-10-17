@@ -12,12 +12,13 @@ fullfile(rooti,['mprage.nii.gz']),...
 fullfile(rooto,['mprage_gradnonlin.nii.gz']) ));
 
 //run N4 bias-field correction
-
+/usr/pubsw/packages/ANTS/2.4.4/bin/N4BiasFieldCorrection -d 3 -v 1 -s 4 -b [ 180 ] -c [ 50x50x50x50, 0.0 ] \
+  -i mprage_gradnonlin.nii.gz -o [ mprage_gradnonlin_N4.nii.gz, BiasField.nii.gz ]
 
 //run freesurfer reconstruction
 for exam in {mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004};do
 SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
-data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprage_gradnonlin.nii.gz
+data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprage_gradnonlin_N4.nii.gz
 recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
 done
 
