@@ -1,0 +1,14 @@
+scanner=C2
+mrdegibbs dwi_${scanner}_b0.mif ${scanner}/p2_degibbs/dwi_b0.mif
+
+exam=mag_20231012_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+mrdegibbs ${path}/C2/p1_nii/dwi_b0.mif ${path}/C2/p2_degibbs/dwi_b0.mif -force
+mrdegibbs ${path}/C1/p1_nii/dwi_b0.mif ${path}/C1/p2_degibbs/dwi_b0.mif -force
+
+
+cd /autofs/space/linen_001/users/Yixin/lib
+exam=mag_20231012_hires
+path=/autofs/space/linen_001/users/Yixin/${exam}_process
+sh rician_correct_mppca.sh -i ${path}/C2/p1_nii/dwi_no_b0.mif -o ${path}/C2/p3_denoise/dwi_no_b0.mif -n 3
+sh rician_correct_mppca.sh -i ${path}/C1/p1_nii/dwi_no_b0.mif -o ${path}/C1/p3_denoise/dwi_no_b0.mif -n 3
