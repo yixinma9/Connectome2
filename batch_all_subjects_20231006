@@ -22,6 +22,13 @@ data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage_gradnonlin/mprag
 recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
 done
 
+//run freesurfer reconstruction
+exam=20230915
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage.nii.gz
+recon-all -subjid fs -i ${data} -all -hires -expert /autofs/space/linen_001/users/Yixin/setup/expert_file
+done
+
 exam=mag_20230823
 SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
 data=/autofs/space/linen_001/users/Yixin/${exam}_process/mprage.nii.gz
