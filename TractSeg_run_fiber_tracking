@@ -1,0 +1,7 @@
+path=/autofs/space/linen_001/users/Yixin/mag_20231012_hires_process/C2/q8_final
+/autofs/space/linen_001/users/Yixin/bin/TractSeg \
+-i ${path}/dwi.nii.gz \
+-o ${path}/trackseg \
+--bvals ${path}/bvals \
+--bvecs ${path}/bvecs_orig \
+--raw_diffusion_input
