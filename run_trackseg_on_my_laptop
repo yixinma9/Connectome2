@@ -1,0 +1,5 @@
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
+rm -r trackseg
+TractSeg -i Diffusion.nii.gz -o trackseg --raw_diffusion_input --super_resolution --preprocess --csd_type csd_msmt --verbose --keep_intermediate_files
+done
