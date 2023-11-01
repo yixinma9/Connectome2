@@ -4,6 +4,12 @@ rm -r trackseg
 TractSeg -i Diffusion.nii.gz -o trackseg --raw_diffusion_input --super_resolution --preprocess --csd_type csd_msmt --verbose --keep_intermediate_files
 done
 
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
+TractSeg -i trackseg/peaks.nii.gz -o /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg/trackseg --super_resolution --preprocess --verbose --keep_intermediate_files --output_type endings_segmentation
+done
+
+
 for exam in {017,021,022,023,030,034,050,063,078,084};do
 cd /Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
 data_path=/Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
@@ -12,4 +18,14 @@ TractSeg -i ${data_path}/Diffusion.nii.gz -o trackseg \
 --raw_diffusion_input --super_resolution \
 --bvals ${data_path}/Diffusion.bvals --bvecs ${data_path}/Diffusion.bvecs \
 --preprocess --csd_type csd_msmt --verbose --keep_intermediate_files
+done
+
+for exam in {017,021,022,023,030,034,050,063,078,084};do
+cd /Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
+data_path=/Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
+TractSeg -i trackseg/peaks.nii.gz \
+-o ${data_path}/trackseg \
+--super_resolution --preprocess --verbose \
+--keep_intermediate_files \
+--output_type endings_segmentation
 done
