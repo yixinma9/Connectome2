@@ -47,6 +47,21 @@ tckedit ${seg}.tck -mask ${seg}_cut_endings.nii.gz ${seg}_cut_endings.tck -force
 done
 done
 
+fileID = fopen('Diffusion.bvecs','r');
+formatSpec = '%f';
+A = fscanf(fileID,formatSpec);
+fclose(fileID);
+
+A = reshape(A,[size(A,1)/3,3]);
+A(:,3) = - A(:,3);
+
+fileID = fopen('Diffusion.bvecs','w');
+for j =  1:3
+fprintf(fileID,'%4.6f ',A(:,j));
+fprintf(fileID, '\n');
+end
+fclose(fileID)
+
 for exam in {Tract_HC_017,Tract_HC_021,Tract_HC_022,Tract_HC_023,Tract_HC_030,Tract_HC_034,Tract_HC_050,Tract_HC_063,Tract_HC_078,Tract_HC_084};do
 for seg in {CST_left,CST_right,FPT_left,FPT_right,POPT_left,POPT_right,OR_left,OR_right};do
 
