@@ -29,3 +29,20 @@ TractSeg -i trackseg/peaks.nii.gz \
 --keep_intermediate_files \
 --output_type endings_segmentation
 done
+
+for exam in {mag_20230823_process,mag_20230920_process,mag_20230920_process,mag_20230922_process};do
+for seg in {CST_left,CST_right,FPT_left,FPT,right,POPT_left,POPT_right,OR_left,OR_right};do
+
+cd /Users/qm022/Documents/projects/software/Connectome2/${exam}/q8_TractSeg/trackseg
+tckgen ../Diffusion.nii.gz -fslgrad ../Diffusion.bvecs \
+../Diffusion.bvals -seed_image endings_segmentations/${seg}_b.nii.gz \
+-include endings_segmentations/${seg}_e.nii.gz \
+-mask bundle_segmentations/${seg}.nii.gz CST_left.tck -algorithm Tensor_Det -force
+
+mrcalc bundle_segmentations/${seg}.nii.gz endings_segmentations/${seg}_b.nii.gz \
+-subtract endings_segmentations/${seg}_e.nii.gz -subtract ${seg}_cut_endings.nii.gz -force
+
+tckedit ${seg}.tck -mask ${seg}_cut_endings.nii.gz ${seg}_cut_endings.tck -minlength 200 -force
+
+done
+done
