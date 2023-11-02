@@ -46,3 +46,20 @@ tckedit ${seg}.tck -mask ${seg}_cut_endings.nii.gz ${seg}_cut_endings.tck -force
 
 done
 done
+
+for exam in {Tract_HC_017,Tract_HC_021,Tract_HC_022,Tract_HC_023,Tract_HC_030,Tract_HC_034,Tract_HC_050,Tract_HC_063,Tract_HC_078,Tract_HC_084};do
+for seg in {CST_left,CST_right,FPT_left,FPT_right,POPT_left,POPT_right,OR_left,OR_right};do
+
+cd /Users/qm022/Documents/projects/software/Connectome2/${exam}/q8_TractSeg/trackseg
+tckgen ../Diffusion.nii.gz -fslgrad ../Diffusion.bvecs \
+../Diffusion.bvals -seed_image endings_segmentations/${seg}_b.nii.gz \
+-include_ordered endings_segmentations/${seg}_b.nii.gz -include_ordered endings_segmentations/${seg}_e.nii.gz \
+-mask bundle_segmentations/${seg}.nii.gz ${seg}.tck -algorithm Tensor_Prob -force -seed_unidirectional
+
+mrcalc bundle_segmentations/${seg}.nii.gz endings_segmentations/${seg}_b.nii.gz \
+-subtract endings_segmentations/${seg}_e.nii.gz -subtract ${seg}_cut_endings.nii.gz -force
+
+tckedit ${seg}.tck -mask ${seg}_cut_endings.nii.gz ${seg}_cut_endings.tck -force
+
+done
+done
