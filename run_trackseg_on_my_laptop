@@ -18,6 +18,15 @@ cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_T
 TractSeg -i trackseg/peaks.nii.gz -o /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg/trackseg --super_resolution --preprocess --verbose --keep_intermediate_files --output_type endings_segmentation
 done
 
+for exam in Tract_HC_050;do
+cd /Users/qm022/Documents/projects/software/Connectome2/${exam}/q8_TractSeg
+data_path=/Users/qm022/Documents/projects/software/Connectome2/${exam}/q8_TractSeg
+rm -r trackseg
+TractSeg -i Diffusion.nii.gz --brain_mask ${data_path}/brain_mask.nii.gz \
+-o trackseg --raw_diffusion_input --super_resolution \
+--preprocess --csd_type csd_msmt --verbose --keep_intermediate_files
+done
+
 
 for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
 cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
@@ -80,8 +89,23 @@ fclose(fileID)
 
 for exam in {Tract_HC_017,Tract_HC_021,Tract_HC_022,Tract_HC_023,Tract_HC_030,Tract_HC_034,Tract_HC_050,Tract_HC_063,Tract_HC_078,Tract_HC_084};do
 for seg in {CST_left,CST_right,FPT_left,FPT_right,POPT_left,POPT_right,OR_left,OR_right};do
-
 cd /Users/qm022/Documents/projects/software/Connectome2/${exam}/q8_TractSeg/trackseg
+tckgen ../Diffusion.nii.gz -fslgrad ../Diffusion.bvecs \
+../Diffusion.bvals -seed_image endings_segmentations/${seg}_b.nii.gz \
+-include_ordered endings_segmentations/${seg}_b.nii.gz -include_ordered endings_segmentations/${seg}_e.nii.gz \
+-mask bundle_segmentations/${seg}.nii.gz ${seg}.tck -algorithm Tensor_Prob -force -seed_unidirectional
+
+mrcalc bundle_segmentations/${seg}.nii.gz endings_segmentations/${seg}_b.nii.gz \
+-subtract endings_segmentations/${seg}_e.nii.gz -subtract ${seg}_cut_endings.nii.gz -force
+
+tckedit ${seg}.tck -mask ${seg}_cut_endings.nii.gz ${seg}_cut_endings.tck -force
+
+done
+done
+
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+for seg in {CST_left,CST_right,FPT_left,FPT_right,POPT_left,POPT_right,OR_left,OR_right};do
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg/trackseg
 tckgen ../Diffusion.nii.gz -fslgrad ../Diffusion.bvecs \
 ../Diffusion.bvals -seed_image endings_segmentations/${seg}_b.nii.gz \
 -include_ordered endings_segmentations/${seg}_b.nii.gz -include_ordered endings_segmentations/${seg}_e.nii.gz \
