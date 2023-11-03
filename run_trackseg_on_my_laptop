@@ -180,7 +180,29 @@ tcksample trackseg/CST_left.tck r.nii trackseg/r_CST_left.tsf
 
 
 
+C2_name=mag_20230927_process
+C1_name=C1_AxCaliber/Tract_HC_084
+C2=/autofs/space/linen_001/users/Yixin/${C2_name}/combined/q6_final/dwi_b0_mean_masked.nii.gz
+C1=/autofs/space/linen_001/users/Yixin/${C1_name}/dwi_b0_mean_masked.nii.gz
 
+cd /autofs/space/linen_001/users/Yixin/${C2_name}/combined/
+/usr/pubsw/packages/ANTS/2.4.4/bin/antsRegistrationSyNQuick.sh -d 3 -t s -f ${C2} \
+-m ${C1} -o Ants_C1_to_C2_ -n 8
+
+mkdir /autofs/space/linen_001/users/Yixin/${C2_name}/combined/C1/
+
+cd /autofs/space/linen_001/users/Yixin/${C2_name}/combined/
+for metric in r;do
+C1=/autofs/space/linen_001/users/Yixin/${C1_name}/mcmc_smt_axcaliber_p/${metric}.nii
+C1_output=/autofs/space/linen_001/users/Yixin/${C2_name}/combined/c1/${metric}.nii 
+/usr/pubsw/packages/ANTS/2.4.4/bin/antsApplyTransforms \
+-d 3 \
+-i ${C1} \
+-r ${C2} \
+-t Ants_C1_to_C2_0GenericAffine.mat \
+-t Ants_C1_to_C2_1Warp.nii.gz \
+-o ${C1_output}  
+done
 
 
 
