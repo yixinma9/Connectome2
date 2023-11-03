@@ -131,6 +131,31 @@ mri_vol2vol --mov combined/mcmc_snr_voxel_p_0r5_rcn_new_snr_sigma_divNex_q/${nam
 --o ../mni_space_C2/${exam}_r.nii --tal --talres 1
 done
 
+// transform all subjects to the MNI space
+for exam in {mag_20230823,mag_20230920,mag_20230922,mag_20230925,mag_20230927,mag_20230928,mag_20231003,mag_20231004,mag_20231012,mag_20231025};do
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/${exam}_process
+cd ${path}
+mkdir ../mni_space_C2_p
+name=r
+mri_vol2vol --mov combined/mcmc_snr_voxel_p_0r5_rcn_new_snr_sigma_divNex_p/${name}.nii --reg register.dat \
+--o ../mni_space_C2_p/${exam}_r.nii --tal --talres 1
+done
+
+
+for exam in {017,021,022,023,030,034,050,063,078,084};do
+path=/autofs/space/linen_001/users/Yixin/C1_AxCaliber/Tract_HC_${exam}/
+SUBJECTS_DIR=/autofs/space/linen_001/users/Yixin/C1_AxCaliber/Tract_HC_${exam}
+cd ${path}
+bbregister --s fs --mov p6_final/mean_D19ms_b800.nii.gz --init-fsl --reg register.dat --dti
+
+mkdir ../../mni_space_C1
+name=r
+mri_vol2vol --mov mcmc_smt_axcaliber_p/${name}.nii --reg register.dat \
+--o ../../mni_space_C1/Tract_HC_${exam}_r.nii --tal --talres 1
+done
+
+mrcalc
 
 
 for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
