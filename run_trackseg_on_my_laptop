@@ -174,8 +174,19 @@ tckedit ${seg}.tck -mask ${seg}_cut_endings.nii.gz ${seg}_cut_endings.tck -force
 done
 done
 
-cd /Users/qm022/Documents/projects/software/Connectome2/mag_20231012_process/q8_TractSeg
-tcksample trackseg/CST_left.tck r.nii trackseg/r_CST_left.tsf
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+for seg in {CST_left,CST_right};do
+
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg/trackseg
+tckgen ../Diffusion.nii.gz -fslgrad ../Diffusion.bvecs \
+../Diffusion.bvals -seed_image endings_segmentations/${seg}_b.nii.gz \
+-include_ordered endings_segmentations/${seg}_b.nii.gz -include_ordered endings_segmentations/${seg}_e.nii.gz \
+-mask bundle_segmentations/${seg}.nii.gz ${seg}.tck -algorithm Tensor_Prob -force -seed_unidirectional -force
+
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
+tcksample trackseg/${seg}.tck ../r.nii trackseg/r_${seg}.tsf -force
+done
+done
 
 
 
