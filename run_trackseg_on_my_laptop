@@ -185,14 +185,14 @@ tckgen ../Diffusion.nii.gz -fslgrad ../Diffusion.bvecs \
 exam=20231025
 
 for seg in {CST_left,CST_right,FPT_left,FPT_right,POPT_left,POPT_right,OR_left,OR_right};do
+
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+for seg in {CST_left,CST_right};do
 cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg/trackseg
-tckgen ../Diffusion.nii.gz -fslgrad ../Diffusion.bvecs \
-../Diffusion.bvals -seed_image endings_segmentations/${seg}_b.nii.gz \
--include_ordered endings_segmentations/${seg}_b.nii.gz -include_ordered endings_segmentations/${seg}_e.nii.gz \
--mask bundle_segmentations/${seg}.nii.gz ${seg}.tck -algorithm Tensor_Prob -force -seed_unidirectional -force
 
 cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
-tcksample trackseg/${seg}.tck ../r.nii trackseg/r_${seg}.tsf -force
+tckresample trackseg/${seg}.tck -num_points 100 trackseg/${seg}_100.tck
+tcksample trackseg/${seg}_100.tck ../r.nii trackseg/r_${seg}_100.tck -force
 
 done
 
@@ -228,6 +228,47 @@ C1_output=/autofs/space/linen_001/users/Yixin/${C2_name}/combined/c1/${metric}.n
 -o ${C1_output}  
 done
 
+
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
+mov=trackseg/FA.nii.gz
+targ=/Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz
+/Users/qm022/build/install/bin/antsRegistrationSyNQuick.sh -d 3 \
+-t s -f ${targ} \
+-m ${mov} -o Ants_${exam}_quick_ -n 8
+done
+
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
+/Users/qm022/build/install/bin/antsApplyTransforms \
+-d 3 \
+-i ../r.nii \
+-r /Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz \
+-t Ants_${exam}_quick_0GenericAffine.mat \
+-t Ants_${exam}_quick_1Warp.nii.gz \
+-o ../r_in_JHU.nii
+done
+
+path+="/Users/qm022/build/install/bin"  
+for exam in {017,021,022,023,030,034,050,063,078,084};do
+cd /Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
+mov=trackseg/FA.nii.gz
+targ=/Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz
+/Users/qm022/build/install/bin/antsRegistrationSyNQuick.sh -d 3 \
+-t s -f ${targ} \
+-m ${mov} -o Ants_${exam}_quick_ -n 8
+done
+
+for exam in {017,021,022,023,030,034,050,063,078,084};do
+cd /Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
+/Users/qm022/build/install/bin/antsApplyTransforms \
+-d 3 \
+-i ../r.nii \
+-r /Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz \
+-t Ants_${exam}_quick_0GenericAffine.mat \
+-t Ants_${exam}_quick_1Warp.nii.gz \
+-o ../r_in_JHU.nii
+done
 
 
 
