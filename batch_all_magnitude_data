@@ -159,6 +159,50 @@ cd ${path}/${exam}_process/combined/p4_eddy
 --out=../p4_eddy/dwi_eddy
 done
 
+exam=20230915_RR_C1
+path=/autofs/space/linen_001/users/Yixin/
+cd ${path}/${exam}_process/combined/p4_eddy
+/usr/pubsw/packages/fsl/6.0.7.3/bin/eddy_cuda10.2 \
+--imain=../p2_degibbs/dwi_886.nii.gz \
+--mask=../p3_topup/b0s_topup_mean_bet_mask.nii.gz \
+--acqp=/autofs/space/linen_001/users/Yixin/setup/acqparams.txt \
+--index=index.txt \
+--bvecs=../p2_degibbs/bvecs_886 --bvals=../p2_degibbs/bvals_mod_886 --topup=../p3_topup/b0s_topup \
+--flm=cubic --interp=spline --niter=8 --data_is_shelled --verbose \
+--out=../p4_eddy/dwi_eddy
+
+exam=20230915_RR_C2
+path=/autofs/space/linen_001/users/Yixin/${exam}_process/combined
+cd ${path}
+mrconvert p6_final/dwi.mif p6_final/dwi.nii.gz -export_grad_fsl p6_final/bvecs p6_final/bvals
+session=1
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 0:9 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.nii.gz std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.nii.gz mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+session=2
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 541:550 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.nii.gz std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.nii.gz mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+session=3
+mkdir p7_noise_10b0s_${session}
+mrconvert p6_final/dwi.mif -coord 3 150:159 p7_noise_10b0s_${session}/dwi_10b0s.nii.gz -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.nii.gz std p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz -axis 3 -force
+mrmath p7_noise_10b0s_${session}/dwi_10b0s.nii.gz mean p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz -axis 3 -force
+mrfilter p7_noise_10b0s_${session}/dwi_10b0s_std.nii.gz median p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -extent 11 -force
+mrcalc p7_noise_10b0s_${session}/dwi_10b0s_mean.nii.gz p7_noise_10b0s_${session}/dwi_10b0s_std_median.nii.gz -divide p7_noise_10b0s_${session}/snr.nii.gz -force
+
+mkdir p7_noise_10b0s_average
+mrcalc p7_noise_10b0s_1/snr.nii.gz p7_noise_10b0s_2/snr.nii.gz -add p7_noise_10b0s_3/snr.nii.gz -add 3 -divide p7_noise_10b0s_average/snr.nii.gz
+mrcalc p7_noise_10b0s_1/dwi_10b0s_std_median.nii.gz p7_noise_10b0s_2/dwi_10b0s_std_median.nii.gz -add p7_noise_10b0s_3/dwi_10b0s_std_median.nii.gz -add 3 -divide p7_noise_10b0s_average/dwi_10b0s_std_median.nii.gz
+
 
 //gradient non-linear correction
 clear
