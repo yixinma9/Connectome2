@@ -18,9 +18,9 @@ rsync -a ym918@door.nmr.mgh.harvard.edu:/autofs/space/linen_001/users/Yixin/mag_
 Documents/projects/software/Connectome2/mag_${exam}_process/radius.nii.gz
 done
 
-for exam in {20231025,20231012};do
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
 rsync -a ym918@door.nmr.mgh.harvard.edu:/autofs/space/allegro_002/users/hlee/Connectome2/AxCaliber_SMT/data/${exam}/nii/whole/FIT_a.nii.gz \
-Documents/projects/software/Connectome2/mag_${exam}_process/diameter.nii.gz
+Documents/projects/software/Connectome2/mag_${exam}_process/diameter_repeat.nii.gz
 done
 
 for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
