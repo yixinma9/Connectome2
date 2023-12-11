@@ -1,0 +1,124 @@
+for subj in {017,021,022,023,030,034,050,063,078,084};do
+rsync -a ym918@door.nmr.mgh.harvard.edu:/autofs/space/linen_001/users/Yixin/C1_AxCaliber/Tract_HC_${subj}/snr1.nii.gz \
+Documents/projects/software/Connectome2/Tract_HC_${subj}/snr.nii.gz
+done
+
+for subj in {017,021,022,023,030,034,050,063,078,084};do
+rsync -a ym918@door.nmr.mgh.harvard.edu:/autofs/space/allegro_002/users/hlee/SMT_TractCaliber/data/Tract_HC_${subj}/magnitude/nii/whole/FIT_a.nii.gz \
+Documents/projects/software/Connectome2/Tract_HC_${subj}/diameter.nii.gz
+done
+
+for subj in {017,021,022,023,030,034,050,063,078,084};do
+rsync -a ym918@door.nmr.mgh.harvard.edu:/autofs/space/linen_001/users/Yixin/C1_AxCaliber/Tract_HC_${subj}/mcmc_snr_voxel_p_0r5_rcn1_snr20_p/r.nii \
+Documents/projects/software/Connectome2/Tract_HC_${subj}/radius.nii.gz
+done
+
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+rsync -a ym918@door.nmr.mgh.harvard.edu:/autofs/space/linen_001/users/Yixin/mag_${exam}_process/combined/mcmc_snr_voxel_p_0_rcn1_snr20_p/r.nii \
+Documents/projects/software/Connectome2/mag_${exam}_process/radius.nii.gz
+done
+
+for exam in {20231025,20231012};do
+rsync -a ym918@door.nmr.mgh.harvard.edu:/autofs/space/allegro_002/users/hlee/Connectome2/AxCaliber_SMT/data/${exam}/nii/whole/FIT_a.nii.gz \
+Documents/projects/software/Connectome2/mag_${exam}_process/diameter.nii.gz
+done
+
+for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
+cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_TractSeg
+/Users/qm022/build/install/bin/antsApplyTransforms \
+-d 3 \
+-i ../radius.nii.gz \
+-r /Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz \
+-t Ants_${exam}_quick_0GenericAffine.mat \
+-t Ants_${exam}_quick_1Warp.nii.gz \
+-o ../radius_in_JHU.nii
+done
+
+for exam in {017,021,022,023,030,034,050,063,078,084};do
+cd /Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
+/Users/qm022/build/install/bin/antsApplyTransforms \
+-d 3 \
+-i ../radius.nii.gz \
+-r /Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz \
+-t Ants_${exam}_quick_0GenericAffine.mat \
+-t Ants_${exam}_quick_1Warp.nii.gz \
+-o ../radius_in_JHU.nii
+done
+
+for exam in {017,021,022,023,030,034,050,063,078,084};do
+cd /Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_TractSeg
+/Users/qm022/build/install/bin/antsApplyTransforms \
+-d 3 \
+-i ../snr.nii.gz \
+-r /Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz \
+-t Ants_${exam}_quick_0GenericAffine.mat \
+-t Ants_${exam}_quick_1Warp.nii.gz \
+-o ../snr_in_JHU.nii
+done
+
+cd /Users/qm022/Documents/projects/software/Connectome2/
+mrcalc Tract_HC_017/snr_in_JHU.nii Tract_HC_021/snr_in_JHU.nii -add \
+Tract_HC_022/snr_in_JHU.nii -add \
+Tract_HC_023/snr_in_JHU.nii -add \
+Tract_HC_030/snr_in_JHU.nii -add \
+Tract_HC_034/snr_in_JHU.nii -add \
+Tract_HC_050/snr_in_JHU.nii -add \
+Tract_HC_078/snr_in_JHU.nii -add \
+Tract_HC_084/snr_in_JHU.nii -add \
+9 -divide C1_snr_in_JHU.nii
+
+cd /Users/qm022/Documents/projects/software/Connectome2/
+mrcalc mag_20230823_process/snr_in_JHU.nii mag_20230920_process/snr_in_JHU.nii -add \
+mag_20230922_process/snr_in_JHU.nii -add \
+mag_20230925_process/snr_in_JHU.nii -add \
+mag_20230927_process/snr_in_JHU.nii -add \
+mag_20230928_process/snr_in_JHU.nii -add \
+mag_20231003_process/snr_in_JHU.nii -add \
+mag_20231004_process/snr_in_JHU.nii -add \
+mag_20231012_process/snr_in_JHU.nii -add \
+mag_20231025_process/snr_in_JHU.nii -add \
+10 -divide C2_snr_in_JHU.nii
+
+mrcalc C2_snr_in_JHU.nii wm_mask.nii.gz -multiply C2_snr_in_JHU_masked.nii
+mrcalc C1_snr_in_JHU.nii wm_mask.nii.gz -multiply C1_snr_in_JHU_masked.nii
+
+cd /Users/qm022/Documents/projects/software/Connectome2/
+mrcalc Tract_HC_017/radius_in_JHU.nii Tract_HC_021/radius_in_JHU.nii -add \
+Tract_HC_022/radius_in_JHU.nii -add \
+Tract_HC_023/radius_in_JHU.nii -add \
+Tract_HC_030/radius_in_JHU.nii -add \
+Tract_HC_034/radius_in_JHU.nii -add \
+Tract_HC_050/radius_in_JHU.nii -add \
+Tract_HC_078/radius_in_JHU.nii -add \
+Tract_HC_084/radius_in_JHU.nii -add \
+9 -divide C1_radius_in_JHU.nii -force
+
+cd /Users/qm022/Documents/projects/software/Connectome2/
+mrcalc Tract_HC_017/radius_in_JHU.nii Tract_HC_021/radius_in_JHU.nii -add \
+Tract_HC_022/radius_in_JHU.nii -add \
+Tract_HC_023/radius_in_JHU.nii -add \
+Tract_HC_030/radius_in_JHU.nii -add \
+Tract_HC_034/radius_in_JHU.nii -add \
+Tract_HC_050/radius_in_JHU.nii -add \
+Tract_HC_078/radius_in_JHU.nii -add \
+Tract_HC_084/radius_in_JHU.nii -add \
+Tract_HC_063/radius_in_JHU.nii -add \
+10 -divide C1_radius_in_JHU_test.nii -force
+
+cd /Users/qm022/Documents/projects/software/Connectome2/
+mrcalc mag_20230823_process/radius_in_JHU.nii mag_20230920_process/radius_in_JHU.nii -add \
+mag_20230922_process/radius_in_JHU.nii -add \
+mag_20230925_process/radius_in_JHU.nii -add \
+mag_20230927_process/radius_in_JHU.nii -add \
+mag_20230928_process/radius_in_JHU.nii -add \
+mag_20231003_process/radius_in_JHU.nii -add \
+mag_20231004_process/radius_in_JHU.nii -add \
+mag_20231012_process/radius_in_JHU.nii -add \
+mag_20231025_process/radius_in_JHU.nii -add \
+10 -divide C2_radius_in_JHU.nii
+
+mrcalc C2_radius_in_JHU.nii wm_mask.nii.gz -multiply C2_radius_in_JHU_masked.nii
+mrcalc C1_radius_in_JHU.nii wm_mask.nii.gz -multiply C1_radius_in_JHU_masked.nii
+mrcalc C1_radius_in_JHU_test.nii wm_mask.nii.gz -multiply C1_radius_in_JHU_masked_test.nii
+
+
