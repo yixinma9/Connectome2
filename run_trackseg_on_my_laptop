@@ -234,8 +234,8 @@ cd /Users/qm022/Documents/projects/software/Connectome2/mag_${exam}_process/q8_T
 mov=trackseg/FA.nii.gz
 targ=/Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz
 /Users/qm022/build/install/bin/antsRegistrationSyNQuick.sh -d 3 \
--t s -f ${targ} \
--m ${mov} -o Ants_${exam}_quick_ -n 8
+-t r -f ${targ} \
+-m ${mov} -o Ants_${exam}_quick_rigid -n 8
 done
 
 for exam in {20231025,20231012,20231004,20231003,20230928,20230927,20230925,20230922,20230920,20230823};do
@@ -255,8 +255,8 @@ cd /Users/qm022/Documents/projects/software/Connectome2/Tract_HC_${exam}/q8_Trac
 mov=trackseg/FA.nii.gz
 targ=/Users/qm022/Documents/projects/software/Connectome2/JHU_atlases/JHU-ICBM-FA-1mm.nii.gz
 /Users/qm022/build/install/bin/antsRegistrationSyNQuick.sh -d 3 \
--t s -f ${targ} \
--m ${mov} -o Ants_${exam}_quick_ -n 8
+-t r -f ${targ} \
+-m ${mov} -o Ants_${exam}_quick_rigid -n 8
 done
 
 for exam in {017,021,022,023,030,034,050,063,078,084};do
