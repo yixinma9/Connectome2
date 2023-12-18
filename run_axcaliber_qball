@@ -1,0 +1,26 @@
+for exam in {20231012,20231004,20231003,20230928,20230927,20230925,20230922};do
+cd /autofs/space/linen_001/users/Yixin/mag_${exam}_process/combined/p6_final
+mrconvert dwi.mif -coord 3 0:9 b0s_PA.nii.gz -export_grad_fsl bvecs_b0s_PA.txt bvals_b0s_PA.txt
+mrconvert dwi.mif -coord 3 10:124 qb32_D30ms.nii.gz -export_grad_fsl bvecs_qb32_D30ms.txt bvals_qb32_D30ms.txt
+mrconvert dwi.mif -coord 3 125:469 qb64_D30ms.nii.gz -export_grad_fsl bvecs_qb64_D30ms.txt bvals_qb64_D30ms.txt
+mrconvert dwi.mif -coord 3 470:745 qb64_D13ms.nii.gz -export_grad_fsl bvecs_qb64_D13ms.txt bvals_qb64_D13ms.txt
+mrconvert dwi.mif -coord 3 746:895 qb32_D13ms.nii.gz -export_grad_fsl bvecs_qb32_D13ms.txt bvals_qb32_D13ms.txt
+done
+
+for exam in {20231012,20231004,20231003,20230928,20230927,20230925,20230922};do
+for exam in {20230823,20230920};do
+cd /autofs/space/linen_001/users/Yixin/mag_${exam}_process/combined/p6_final
+mrmath dwi_b0.nii.gz mean dwi_b0_mean.nii.gz -axis 3
+mri_synthseg --i dwi_b0_mean.nii.gz --o dwi_b0_mean_synthseg.nii.gz
+mrgrid dwi_b0_mean_synthseg.nii.gz regrid -template dwi_b0_mean.nii.gz dwi_b0_mean_synthseg_nearest.nii.gz -interp nearest
+done
+
+
+for exam in {20230823,20230920};do
+cd /autofs/space/linen_001/users/Yixin/mag_${exam}_process/combined/p6_final
+mrconvert dwi.mif -coord 3 0:9 b0s_PA.nii.gz -export_grad_fsl bvecs_b0s_PA.txt bvals_b0s_PA.txt
+mrconvert dwi.mif -coord 3 10:159 qb32_D13ms.nii.gz -export_grad_fsl bvecs_qb32_D13ms.txt bvals_qb32_D13ms.txt
+mrconvert dwi.mif -coord 3 160:435 qb64_D13ms.nii.gz -export_grad_fsl bvecs_qb64_D13ms.txt bvals_qb64_D13ms.txt
+mrconvert dwi.mif -coord 3 436:550 qb32_D30ms.nii.gz -export_grad_fsl bvecs_qb32_D30ms.txt bvals_qb32_D30ms.txt
+mrconvert dwi.mif -coord 3 551:895 qb64_D30ms.nii.gz -export_grad_fsl bvecs_qb64_D30ms.txt bvals_qb64_D30ms.txt
+done
