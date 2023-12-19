@@ -1,0 +1,24 @@
+for subj in {017,021,022,023,030,034,050,063,078,084};do
+
+data_home=/autofs/space/linen_001/users/Yixin/C1_AxCaliber/Tract_HC_${subj}
+cd ${data_home}/q8_TractSeg
+dwi2tensor Diffusion.nii.gz -fslgrad Diffusion.bvecs Diffusion.bvals tensor.mif
+tensor2metric tensor.mif -fa fa.nii.gz
+mrcalc fa.nii.gz -finite fa.nii.gz 0.0 -if fa_nan.nii.gz
+mrcalc fa_nan.nii.gz ../brain_mask.nii.gz -multiply fa_nan_masked.nii.gz
+hcp_path=/usr/pubsw/packages/fsl/6.0.1/data/standard/FSL_HCP1065_FA_1mm.nii.gz
+
+fsl_reg ${data_home}/q8_TractSeg/fa_nan_masked.nii.gz ${hcp_path} ${data_home}/q8_TractSeg/nat2std -e -FA
+applywarp -r ${hcp_path}
+
+applywarp -i ${data_home}/q8_TractSeg/fa_nan_masked.nii.gz -r ${hcp_path} -w ${data_home}/q8_TractSeg/nat2std_warp.nii.gz \
+-o ${data_home}/q8_TractSeg/fa_nan_masked_warped.nii.gz
+
+diameter=/autofs/cluster/msilab/users/tractcaliber/data/Tract_HC_${subj}/analysis/AxCaliber_fitting_qball/full_a_map_2e5.nii.gz 
+
+applywarp -i ${diameter} -r ${hcp_path} -w ${data_home}/q8_TractSeg/nat2std_warp.nii.gz \
+-o ${data_home}/diameter_warped.nii.gz
+
+mrcalc ${data_home}/diameter_warped.nii.gz 1000000 -multiply ${data_home}/diameter_1e6_warped.nii.gz
+
+done
