@@ -2,18 +2,20 @@
 
 for subj in {017,021,022,023,029,030,031,032,034,036,040,041,042,050,063,078,084};do
 
+mask=wm
 data_home=/autofs/space/linen_001/users/Yixin/C1_AxCaliber/Tract_HC_${subj}
 cd ${data_home}/q8_TractSeg
 dwi2tensor Diffusion.nii.gz -fslgrad Diffusion.bvecs Diffusion.bvals tensor.mif -force
 tensor2metric tensor.mif -fa fa.nii.gz -force
 mrcalc fa.nii.gz -finite fa.nii.gz 0.0 -if fa_nan.nii.gz -force
-#mrcalc fa_nan.nii.gz ../brain_mask.nii.gz -multiply fa_nan_masked.nii.gz -force
+#mrcalc fa_nan.nii.gz ../${mask}.nii.gz -multiply fa_nan_mask_by_${mask}.nii.gz -force
 hcp_path=/usr/pubsw/packages/fsl/6.0.1/data/standard/FSL_HCP1065_FA_1mm.nii.gz
 
-fsl_reg ${data_home}/q8_TractSeg/fa_nan.nii.gz ${hcp_path} ${data_home}/q8_TractSeg/nat2std -e -FA -flirt "-wmseg ${data_home}/wm.nii.gz
+fsl_reg ${data_home}/q8_TractSeg/fa_nan_mask_by_${mask} ${hcp_path} ${data_home}/q8_TractSeg/nat2std_mask_by_${mask} -e -FA
 
-applywarp -i ${data_home}/q8_TractSeg/fa_nan.nii.gz -r ${hcp_path} -w ${data_home}/q8_TractSeg/nat2std_warp.nii.gz \
--o ${data_home}/q8_TractSeg/fa_nan_warped_with_wm.nii.gz
+applywarp -i ${data_home}/q8_TractSeg/fa_nan.nii.gz -r ${hcp_path} -w ${data_home}/q8_TractSeg/nat2std_mask_by_${mask}_warp.nii.gz \
+-o ${data_home}/q8_TractSeg/fa_nan_warped_mask_by_${mask}.nii.gz
+
 
 done
 
